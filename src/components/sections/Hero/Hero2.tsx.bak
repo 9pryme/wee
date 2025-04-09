@@ -1,0 +1,65 @@
+'use client'
+import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+
+export function Hero2() {
+  const [isFlipped, setIsFlipped] = useState(false)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsFlipped(prev => !prev)
+    }, 4000) // Flip every 4 seconds
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const texts = [
+    "WE DRIVE 50% OF NIGERIA'S ECONOMY. BUT BANKS GIVE US LESS THAN 10% OF SME LOANS.",
+    "62% OF US CAN'T GROW OUR BUSINESSES BECAUSE BANKS WON'T GIVE US LOANS."
+  ]
+
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="h-[90vh] flex flex-col items-center justify-between bg-[#F8EFE2] relative overflow-visible"
+    >
+      <div className="flex flex-col items-center justify-center flex-1 px-4 w-full max-w-[900px] mx-auto relative z-10">
+        <div className="relative h-[200px] w-full perspective-[1000px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isFlipped ? 'back' : 'front'}
+              initial={{ rotateX: -90, opacity: 0 }}
+              animate={{ rotateX: 0, opacity: 1 }}
+              exit={{ rotateX: 90, opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="absolute inset-0"
+            >
+              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 font-['Oswald'] tracking-[-0.04em] max-w-[690px] mx-auto uppercase text-center">
+                {isFlipped ? texts[1] : texts[0]}
+              </h1>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+      <div className="relative w-full">
+        <Image
+          src="/images/left.png"
+          alt="Left decoration"
+          width={450}
+          height={450}
+          className="absolute -bottom-[72px] left-0 z-0"
+        />
+        <Image
+          src="/images/right.png"
+          alt="Right decoration" 
+          width={450}
+          height={450}
+          className="absolute -bottom-[72px] right-0 z-0"
+        />
+      </div>
+    </motion.section>
+  )
+} 

@@ -1,0 +1,70 @@
+'use client'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { ThreeDMarquee } from '@/components/ui/3d-marquee'
+import Image from 'next/image'
+export function Hero() {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0)
+
+  const texts = [
+    {
+      text: "WE DRIVE 50% OF NIGERIA'S ECONOMY. BUT BANKS GIVE US LESS THAN 10% OF SME LOANS.",
+      className: "text-4xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]"
+    },
+    {
+      text: "62% OF US CAN'T GROW OUR BUSINESSES BECAUSE BANKS WON'T GIVE US LOANS.",
+      className: "text-4xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]"
+    }
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTextIndex(prev => (prev + 1) % texts.length)
+    }, 4000) // Switch every 4 seconds
+
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="h-[90vh] flex flex-col items-center justify-center bg-[#000000]/80 relative overflow-hidden"
+    >
+      <ThreeDMarquee className="!opacity-[0.15]" />
+      <div className="flex justify-center items-center px-4 w-full max-w-[1200px] mx-auto relative z-10">
+        <div className="relative w-full max-w-[800px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentTextIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className={texts[currentTextIndex].className}
+            >
+              {texts[currentTextIndex].text}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+      <div className="relative w-full">
+        <Image
+          src="/images/left.png"
+          alt="Left decoration"
+          width={450}
+          height={450}
+          className="absolute -bottom-[450px] left-0 z-0"
+        />
+        <Image
+          src="/images/right.png"
+          alt="Right decoration" 
+          width={450}
+          height={450}
+          className="absolute -bottom-[450px] right-0 z-0"
+        />
+      </div>
+    </motion.section>
+  )
+}
