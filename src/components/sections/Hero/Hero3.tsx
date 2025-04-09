@@ -1,12 +1,11 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 
 export function Hero3() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
   const texts = [
     {
@@ -20,10 +19,11 @@ export function Hero3() {
   ]
 
   const videos = [
-    { id: 1, video: "/videos/dunni wo caps.mp4" },
-    { id: 2, video: "/videos/dunni wo caps.mp4" },
-    { id: 3, video: "/videos/dunni wo caps.mp4" },
-    { id: 4, video: "/videos/dunni wo caps.mp4" }
+    { id: 1, video: "/videos/moji wo caps.mp4" },
+    { id: 2, video: "/videos/Tosin wo caption.mp4" },
+    { id: 3, video: "/videos/Habibah wo caps.mp4" },
+    { id: 4, video: "/videos/Fali wo caps.mp4" },
+    { id: 5, video: "/videos/dunni wo caps.mp4" }
   ]
 
   useEffect(() => {
@@ -33,38 +33,6 @@ export function Hero3() {
 
     return () => clearInterval(timer)
   }, [texts.length])
-
-  useEffect(() => {
-    // Store refs in a variable inside the effect
-    const currentVideoRefs = videoRefs.current
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const video = entry.target as HTMLVideoElement
-          video.play().catch(err => console.log("Video play failed:", err))
-        } else {
-          const video = entry.target as HTMLVideoElement
-          video.pause()
-        }
-      })
-    }, { threshold: 0.1 })
-
-    currentVideoRefs.forEach(videoRef => {
-      if (videoRef) {
-        observer.observe(videoRef)
-        videoRef.play().catch(err => console.log("Video play failed:", err))
-      }
-    })
-
-    return () => {
-      currentVideoRefs.forEach(videoRef => {
-        if (videoRef) {
-          observer.unobserve(videoRef)
-        }
-      })
-    }
-  }, [])
 
   return (
     <motion.section 
@@ -92,7 +60,7 @@ export function Hero3() {
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden"
+              className="relative w-full max-w-3xl aspect-video bg-black rounded-lg overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               <video
@@ -118,7 +86,7 @@ export function Hero3() {
       <div className="relative z-10 container mx-auto px-4">
         <div className="flex flex-col w-full">
           {/* Text Content */}
-          <div className="w-full max-w-3xl mx-auto mb-16">
+          <div className="w-full max-w-4xl mx-auto mb-12">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={currentTextIndex}
@@ -126,7 +94,7 @@ export function Hero3() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <div className={texts[currentTextIndex].className}>
                   {texts[currentTextIndex].text.map((line, index) => (
@@ -138,8 +106,8 @@ export function Hero3() {
           </div>
 
           {/* Video Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
-            {videos.map((item, index) => (
+          <div className="grid grid-cols-5 gap-3 max-w-4xl mx-auto">
+            {videos.map((item) => (
               <motion.div
                 key={item.id}
                 whileHover={{ scale: 1.05 }}
@@ -148,24 +116,17 @@ export function Hero3() {
                 onClick={() => setSelectedVideo(item.video)}
               >
                 <video
-                  ref={(el) => {
-                    videoRefs.current[index] = el;
-                  }}
                   src={item.video}
                   className="w-full h-full object-cover"
-                  muted
-                  loop
-                  playsInline
                   preload="metadata"
-                  autoPlay
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
                   <motion.div
                     whileHover={{ scale: 1.2 }}
-                    className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center"
+                    className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
                   >
                     <svg
-                      className="w-6 h-6 text-black"
+                      className="w-4 h-4 text-black"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
