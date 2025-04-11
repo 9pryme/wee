@@ -28,7 +28,7 @@ export function Ticker({ items, duration = 60, className = '' }: TickerProps) {
           {Array(50).fill(items).flat().map((item, i) => (
             <span 
               key={i} 
-              className={`inline-flex items-center justify-center px-8 py-4 text-8xl font-bold font-oswald ${className}`}
+              className={`inline-flex items-center justify-center px-4 sm:px-8 py-2 sm:py-4 text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold font-oswald ${className}`}
             >
               {item}
             </span>

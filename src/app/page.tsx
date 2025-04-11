@@ -6,7 +6,7 @@ import { Stories2 } from '@/components/sections/Stories/Stories2'
 import { Petition } from '@/components/sections/Petition/Petition'
 import { CTA } from '@/components/sections/CTA/CTA'
 import { Ticker } from '@/components/common/Ticker/Ticker'
-import { BankList } from '@/components/sections/BankList/BankList'
+import { Footer } from '@/components/layout/Footer/Footer'
 
 export default function Home() {
   return (
@@ -22,10 +22,10 @@ export default function Home() {
         </div>
         <Stories />
         <Stories2 />
-        <BankList />
         <Petition />
         <CTA />
       </main>
+      <Footer />
     </>
   )
 }

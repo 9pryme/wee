@@ -19,37 +19,39 @@ export function TestimonialCard({ name, role, quote, className, bgColor = 'bg-[#
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
       className={cn(
-        `${bgColor} rounded-[32px] overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black w-[1000px] h-[514px]`,
+        `${bgColor} rounded-[20px] sm:rounded-[32px] overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 sm:border-4 border-black w-[300px] sm:w-[1000px] h-[400px] sm:h-auto`,
         className
       )}
     >
-      <div className="flex items-stretch h-full">
+      <div className="flex flex-col sm:flex-row items-stretch h-full">
         {/* Text Side */}
-        <div className="flex-1 p-12">
-          <div className="space-y-6">
+        <div className="flex-1 p-4 sm:p-12">
+          <div className="space-y-3 sm:space-y-6">
             <div>
-              <h3 className="text-4xl font-['Oswald'] font-bold text-black uppercase">
+              <h3 className="text-xl sm:text-4xl font-['Oswald'] font-bold text-black uppercase">
                 {name}
               </h3>
-              <p className="text-lg text-black/80 italic font-montserrat mt-1">
+              <p className="text-sm sm:text-lg text-black/80 italic font-montserrat mt-1">
                 {role}
               </p>
             </div>
             <div className="relative">
-              <p className="text-2xl font-['Oswald'] text-black leading-tight">
+              <p className="text-lg sm:text-2xl font-['Oswald'] text-black leading-tight">
                 {quote}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Image Side */}
-        <div className="w-[40%] relative bg-black/5">
-          <div className="absolute inset-0 rounded-r-[28px] overflow-hidden">
+        {/* Image Side - At Bottom on Mobile, Right on Desktop */}
+        <div className="w-full h-[160px] sm:h-[514px] sm:w-[40%] relative bg-black/5 p-4 sm:p-8">
+          <div className="relative h-full w-full rounded-[12px] sm:rounded-[24px] overflow-hidden">
             <Image
               src="/images/aisha.jpg"
               alt={name}
               fill
+              sizes="400px"
+              priority
               className="object-cover"
             />
           </div>

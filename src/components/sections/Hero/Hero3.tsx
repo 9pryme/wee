@@ -6,15 +6,26 @@ import { BackgroundBeams } from '@/components/ui/background-beams'
 export function Hero3() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const texts = [
     {
       text: ["WE DRIVE 50% OF", "NIGERIA'S ECONOMY. BUT BANKS", "GIVE US LESS THAN 10% OF SME LOANS."],
-      className: "text-4xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
+      className: "text-3xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
     },
     {
       text: ["62% OF US CAN'T GROW", "OUR BUSINESSES BECAUSE", "BANKS WON'T GIVE US LOANS."],
-      className: "text-4xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
+      className: "text-3xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
     }
   ]
 
@@ -39,7 +50,7 @@ export function Hero3() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-[90vh] relative bg-black overflow-hidden flex items-end pb-24"
+      className="min-h-[90vh] relative bg-black overflow-hidden flex items-center justify-center"
     >
       {/* Background with Beams */}
       <div className="absolute inset-0 z-0">
@@ -84,9 +95,9 @@ export function Hero3() {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col items-center w-full gap-12">
           {/* Text Content */}
-          <div className="w-full max-w-4xl mx-auto mb-12">
+          <div className="w-full max-w-4xl">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={currentTextIndex}
@@ -106,36 +117,60 @@ export function Hero3() {
           </div>
 
           {/* Video Grid */}
-          <div className="grid grid-cols-5 gap-3 max-w-4xl mx-auto">
-            {videos.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="aspect-square relative rounded-lg overflow-hidden shadow-lg cursor-pointer"
-                onClick={() => setSelectedVideo(item.video)}
-              >
-                <video
-                  src={item.video}
-                  className="w-full h-full object-cover"
-                  preload="metadata"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
-                  <motion.div
-                    whileHover={{ scale: 1.2 }}
-                    className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
-                  >
-                    <svg
-                      className="w-4 h-4 text-black"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
+          <div className="w-full max-w-4xl overflow-hidden relative">
+            {/* Mobile fade overlays */}
+            {isMobile && (
+              <>
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black to-transparent z-10" />
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black to-transparent z-10" />
+              </>
+            )}
+            <motion.div 
+              className="flex md:grid md:grid-cols-5 gap-3 w-full"
+              {...(isMobile ? {
+                initial: { x: "0%" },
+                animate: { x: "-50%" },
+                transition: {
+                  x: {
+                    duration: 20,
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    ease: "linear",
+                  }
+                }
+              } : {})}
+            >
+              {/* Double the videos for continuous scroll effect on mobile */}
+              {(isMobile ? [...videos, ...videos] : videos).map((item, index) => (
+                <motion.div
+                  key={`${item.id}-${index}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-[150px] md:w-auto flex-shrink-0 aspect-square relative rounded-lg overflow-hidden shadow-lg cursor-pointer"
+                  onClick={() => setSelectedVideo(item.video)}
+                >
+                  <video
+                    src={item.video}
+                    className="w-full h-full object-cover"
+                    preload="metadata"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
+                    <motion.div
+                      whileHover={{ scale: 1.2 }}
+                      className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
                     >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
+                      <svg
+                        className="w-4 h-4 text-black"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </div>

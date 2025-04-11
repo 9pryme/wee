@@ -61,14 +61,16 @@ export function Header() {
 
                     {/* CTA Button */}
                     <div>
-                        <Button 
-                            variant="primary" 
-                            size="sm"
-                            bgColor="bg-[#ED323D]"
-                            className="border-[#050F0F] text-white hover:bg-[#d62932] transition-colors"
-                        >
-                            Sign the Petition
-                        </Button>
+                        <Link href="/petition">
+                            <Button 
+                                variant="primary" 
+                                size="sm"
+                                bgColor="bg-[#ED323D]"
+                                className="border-[#050F0F] text-white hover:bg-[#d62932] transition-colors"
+                            >
+                                Sign the Petition
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>

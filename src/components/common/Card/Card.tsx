@@ -32,7 +32,7 @@ export function Card({
       transition={{ duration: 0.8, delay }}
       viewport={{ once: true }}
       className={cn(
-        "relative rounded-[12px] p-8 border-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-[590px]",
+        "relative rounded-[8px] sm:rounded-[12px] p-4 sm:p-8 border-2 sm:border-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-[590px]",
         className
       )}
       style={{
@@ -40,9 +40,9 @@ export function Card({
         borderColor: borderColor
       }}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-2 sm:gap-4">
         <div 
-          className="text-[64px] font-['Oswald'] font-bold" 
+          className="text-3xl sm:text-[64px] font-['Oswald'] font-bold" 
           style={{ 
             color: borderColor,
             ...numberStyles
@@ -50,7 +50,7 @@ export function Card({
         >
           {number.padStart(2, '0')}
         </div>
-        <h3 className="text-3xl font-['Oswald'] font-bold text-black mt-4 leading-tight">
+        <h3 className="text-xl sm:text-3xl font-['Oswald'] font-bold text-black mt-2 sm:mt-4 leading-tight">
           {title}
         </h3>
       </div>
