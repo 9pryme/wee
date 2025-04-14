@@ -11,14 +11,14 @@ const oswald = Oswald({ subsets: ['latin'] })
 interface Stats {
   totalPetitions: number
   totalBanks: number
-  committedBanks: number
+  totalOrganizations: number
 }
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({
     totalPetitions: 0,
     totalBanks: 0,
-    committedBanks: 0
+    totalOrganizations: 0
   })
   const [isLoading, setIsLoading] = useState(true)
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
@@ -31,9 +31,9 @@ export default function Dashboard() {
           .from('petition_submissions')
           .select('*', { count: 'exact' })
 
-        // Get committed banks count
-        const { count: committedCount } = await supabase
-          .from('committed_banks')
+        // Get organizations count
+        const { count: organizationsCount } = await supabase
+          .from('organizations')
           .select('*', { count: 'exact' })
 
         // Get total banks count
@@ -44,7 +44,7 @@ export default function Dashboard() {
         setStats({
           totalPetitions: petitionCount || 0,
           totalBanks: banksCount || 0,
-          committedBanks: committedCount || 0
+          totalOrganizations: organizationsCount || 0
         })
       } catch (error) {
         console.error('Error loading stats:', error)
@@ -83,8 +83,8 @@ export default function Dashboard() {
             value={stats.totalBanks}
           />
           <StatCard
-            title="Committed Banks"
-            value={stats.committedBanks}
+            title="Organizations/Individuals"
+            value={stats.totalOrganizations}
           />
         </div>
 

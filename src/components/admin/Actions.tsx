@@ -41,14 +41,14 @@ export function Actions({ onUpdateEmail }: ActionsProps) {
     },
     {
       title: 'Agency/Bank/Individual',
-      description: 'Update or add new agencies, banks or individuals to receive petitions',
+      description: 'Manage or add new agencies, banks or individuals to receive petitions',
       color: 'bg-emerald-600',
       onClick: () => router.push('/admin/banks')
     },
     {
       title: 'Update Bank Email',
       description: 'Update a bank email in the system',
-      color: 'bg-blue-600',
+      color: 'bg-pink-600',
       onClick: onUpdateEmail
     }
   ]
@@ -56,7 +56,7 @@ export function Actions({ onUpdateEmail }: ActionsProps) {
   return (
     <div className="space-y-6">
       <h2 className={`${oswald.className} text-xl font-semibold text-gray-900 uppercase`}>Quick Actions</h2>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {actions.map((action) => (
           <ActionCard key={action.title} {...action} />
         ))}
