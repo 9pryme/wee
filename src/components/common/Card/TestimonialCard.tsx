@@ -7,11 +7,12 @@ interface TestimonialCardProps {
   name: string
   role: string
   quote: string
+  image: string
   className?: string
   bgColor?: string
 }
 
-export function TestimonialCard({ name, role, quote, className, bgColor = 'bg-[#B4E9FF]' }: TestimonialCardProps) {
+export function TestimonialCard({ name, role, quote, image, className, bgColor = 'bg-[#B4E9FF]' }: TestimonialCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,10 +45,10 @@ export function TestimonialCard({ name, role, quote, className, bgColor = 'bg-[#
         </div>
 
         {/* Image Side - At Bottom on Mobile, Right on Desktop */}
-        <div className="w-full h-[160px] sm:h-[514px] sm:w-[40%] relative bg-black/5 p-4 sm:p-8">
+        <div className="w-full h-[160px] sm:h-[514px] sm:w-[40%] relative p-4 sm:p-8 ">
           <div className="relative h-full w-full rounded-[12px] sm:rounded-[24px] overflow-hidden">
             <Image
-              src="/images/aisha.jpg"
+              src={image}
               alt={name}
               fill
               sizes="400px"

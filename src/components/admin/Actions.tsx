@@ -15,10 +15,12 @@ function ActionCard({ title, description, color, onClick }: ActionCardProps) {
   return (
     <button
       onClick={onClick}
-      className={`${color} p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow w-full text-left`}
+      className={`${color} p-6 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 hover:-translate-y-1 transition-all duration-300 w-full text-left relative overflow-hidden before:absolute before:inset-0 before:bg-black/0 hover:before:bg-black/10 before:transition-colors`}
     >
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-      <p className="text-white/80 text-sm">{description}</p>
+      <div className="relative z-10">
+        <h3 className={`${oswald.className} text-lg font-semibold text-white mb-2 drop-shadow-md`}>{title}</h3>
+        <p className="text-white/80 text-sm drop-shadow">{description}</p>
+      </div>
     </button>
   )
 }
@@ -54,7 +56,7 @@ export function Actions({ onUpdateEmail }: ActionsProps) {
   return (
     <div className="space-y-6">
       <h2 className={`${oswald.className} text-xl font-semibold text-gray-900 uppercase`}>Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {actions.map((action) => (
           <ActionCard key={action.title} {...action} />
         ))}

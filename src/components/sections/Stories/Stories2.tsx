@@ -49,43 +49,48 @@ export function Stories2() {
           {/* First set of cards */}
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
             <TestimonialCard
-              name="AISHA"
-              role="IT entrepreneur denied funding for her startup"
-              quote="They said an IT firm is high-risk. But I already have paying clients. What's the risk in funding what's already working?"
+              name="Nanaah"
+              role="Event Caterer, small chops vendor"
+              quote="I need funding to expand my business and produce at scale"
               bgColor="bg-[#B4E9FF]"
+              image="/images/testimonials/nanaah.jpg"
             />
           </div>
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
             <TestimonialCard
-              name="CHIOMA"
-              role="Fashion designer who can't access capital"
-              quote="Fashion is a billion-naira market. So why do banks refuse to see my potential?"
+              name="Miracle Ademu Eteh"
+              role="Fashion entrepreneur"
+              quote="I need capital to open a physical fashion store"
               bgColor="bg-[#98E9D0]"
+              image="/images/testimonials/miracle.jpg"
             />
           </div>
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
             <TestimonialCard
-              name="AMINA"
-              role="Restaurant owner seeking expansion capital"
-              quote="My restaurant is always full. I need funding to open a second location but banks won't help."
+              name="Wasinta Buba"
+              role="Fashion Designer"
+              quote="I need funding to expand my fashion business and open more branches"
               bgColor="bg-[#FFD9B4]"
+              image="/images/testimonials/wasinta.jpg"
             />
           </div>
           {/* Duplicate set for seamless loop */}
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
             <TestimonialCard
-              name="AISHA"
-              role="IT entrepreneur denied funding for her startup"
-              quote="They said an IT firm is high-risk. But I already have paying clients. What's the risk in funding what's already working?"
+              name="Ife"
+              role="Hairstylist"
+              quote="I need capital to open a salon"
               bgColor="bg-[#B4E9FF]"
+              image="/images/testimonials/ife.jpg"
             />
           </div>
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
             <TestimonialCard
-              name="CHIOMA"
-              role="Fashion designer who can't access capital"
-              quote="Fashion is a billion-naira market. So why do banks refuse to see my potential?"
+              name="Chef OB"
+              role="Chef"
+              quote="I need funding to start my culinary school"
               bgColor="bg-[#98E9D0]"
+              image="/images/testimonials/chefob.jpg"
             />
           </div>
           <div className="w-[300px] md:w-[1000px] flex-shrink-0">
@@ -94,6 +99,7 @@ export function Stories2() {
               role="Restaurant owner seeking expansion capital"
               quote="My restaurant is always full. I need funding to open a second location but banks won't help."
               bgColor="bg-[#FFD9B4]"
+              image="/images/testimonials/amina.jpg"
             />
           </div>
         </motion.div>
