@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { Actions } from '@/components/admin/Actions'
 import { BankEmailModal } from '@/components/admin/BankEmailModal'
 import { DashboardChart } from '@/components/admin/DashboardChart'
+import { DashboardSkeleton } from '@/components/admin/DashboardSkeleton'
 import { Oswald } from 'next/font/google'
 
 const oswald = Oswald({ subsets: ['latin'] })
@@ -24,40 +25,35 @@ export default function Dashboard() {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
 
   useEffect(() => {
-    async function loadStats() {
-      try {
-        // Get petition count
-        const { count: petitionCount } = await supabase
-          .from('petition_submissions')
-          .select('*', { count: 'exact' })
-
-        // Get organizations count
-        const { count: organizationsCount } = await supabase
-          .from('organizations')
-          .select('*', { count: 'exact' })
-
-        // Get total banks count
-        const { count: banksCount } = await supabase
-          .from('banks')
-          .select('*', { count: 'exact' })
-
-        setStats({
-          totalPetitions: petitionCount || 0,
-          totalBanks: banksCount || 0,
-          totalOrganizations: organizationsCount || 0
-        })
-      } catch (error) {
-        console.error('Error loading stats:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     loadStats()
   }, [])
 
+  async function loadStats() {
+    try {
+      const [
+        { count: petitionCount },
+        { count: organizationsCount },
+        { count: banksCount }
+      ] = await Promise.all([
+        supabase.from('petition_submissions').select('*', { count: 'exact' }),
+        supabase.from('organizations').select('*', { count: 'exact' }),
+        supabase.from('banks').select('*', { count: 'exact' })
+      ])
+
+      setStats({
+        totalPetitions: petitionCount || 0,
+        totalBanks: banksCount || 0,
+        totalOrganizations: organizationsCount || 0
+      })
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   if (isLoading) {
-    return <div className="flex items-center justify-center h-[calc(100vh-64px)]">Loading...</div>
+    return <DashboardSkeleton />
   }
 
   return (
@@ -69,23 +65,18 @@ export default function Dashboard() {
       
       <div className="space-y-8">
         <div>
-          <h1 className={`${oswald.className} text-2xl font-bold text-gray-900 uppercase tracking-tight`}>Welcome to Admin Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-600">Manage banks and their email addresses for petitions</p>
+          <h1 className={`${oswald.className} text-2xl font-bold text-gray-900 uppercase tracking-tight`}>
+            Welcome to Admin Dashboard
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage banks and their email addresses for petitions
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard
-            title="Total Petitions"
-            value={stats.totalPetitions}
-          />
-          <StatCard
-            title="Total Banks"
-            value={stats.totalBanks}
-          />
-          <StatCard
-            title="Organizations/Individuals"
-            value={stats.totalOrganizations}
-          />
+          <StatCard title="Total Petitions" value={stats.totalPetitions} />
+          <StatCard title="Total Banks" value={stats.totalBanks} />
+          <StatCard title="Organizations/Individuals" value={stats.totalOrganizations} />
         </div>
 
         <Actions onUpdateEmail={() => setIsEmailModalOpen(true)} />
