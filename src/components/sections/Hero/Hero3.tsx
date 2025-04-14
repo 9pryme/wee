@@ -1,12 +1,23 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 
 export function Hero3() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+
+  // Create refs for all videos upfront
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+
+  // Create a callback function for setting refs
+  const setVideoRef = (index: number) => (el: HTMLVideoElement | null) => {
+    videoRefs.current[index] = el
+    if (el) {
+      el.currentTime = 6
+    }
+  }
 
   useEffect(() => {
     const checkMobile = () => {
@@ -30,11 +41,11 @@ export function Hero3() {
   ]
 
   const videos = [
-    { id: 1, video: "/videos/moji wo caps.mp4" },
-    { id: 2, video: "/videos/Tosin wo caption.mp4" },
-    { id: 3, video: "/videos/Habibah wo caps.mp4" },
-    { id: 4, video: "/videos/Fali wo caps.mp4" },
-    { id: 5, video: "/videos/dunni wo caps.mp4" }
+    { id: 1, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630877/xgcwcpgpmqitpegvpujk.mp4" },
+    { id: 2, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630868/s2ujgiox4bheaz68d2cn.mp4" },
+    { id: 3, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630867/svtfpy6gc0ra1mtgelxa.mp4" },
+    { id: 4, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630852/mywzouiypacw0dgnacch.mp4" },
+    { id: 5, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630842/e0el5pkjd4zsgzpkpznx.mp4" }
   ]
 
   useEffect(() => {
@@ -140,7 +151,6 @@ export function Hero3() {
                 }
               } : {})}
             >
-              {/* Double the videos for continuous scroll effect on mobile */}
               {(isMobile ? [...videos, ...videos] : videos).map((item, index) => (
                 <motion.div
                   key={`${item.id}-${index}`}
@@ -150,10 +160,13 @@ export function Hero3() {
                   onClick={() => setSelectedVideo(item.video)}
                 >
                   <video
+                    ref={setVideoRef(index)}
                     src={item.video}
                     className="w-full h-full object-cover"
                     preload="metadata"
-                  />
+                  >
+                    <track kind="captions" />
+                  </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
                     <motion.div
                       whileHover={{ scale: 1.2 }}
