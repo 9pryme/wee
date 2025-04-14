@@ -45,7 +45,7 @@ export function TestimonialCard({ name, role, quote, image, className, bgColor =
         </div>
 
         {/* Image Side - At Bottom on Mobile, Right on Desktop */}
-        <div className="w-full h-[160px] sm:h-[514px] sm:w-[40%] relative p-4 sm:p-8 ">
+        <div className="w-full h-[260px] sm:h-[514px] sm:w-[40%] relative p-4 sm:p-8 ">
           <div className="relative h-full w-full rounded-[12px] sm:rounded-[24px] overflow-hidden">
             <Image
               src={image}
