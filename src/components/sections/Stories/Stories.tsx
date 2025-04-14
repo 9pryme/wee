@@ -1,23 +1,12 @@
 'use client'
 import { motion, useInView } from 'framer-motion'
 import { StoryCard } from '@/components/common/Card/StoryCard'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function Stories() {
-  const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef)
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   useEffect(() => {
     if (!videoRef.current) return
