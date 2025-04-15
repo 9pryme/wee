@@ -70,7 +70,7 @@ export function Stories2() {
               name="Wasinta Buba"
               role="Fashion Designer"
               quote="I need funding to expand my fashion business and open more branches"
-              bgColor="bg-[#FFD9B4]"
+              bgColor="bg-[#F8A3BE]"
               image="/images/testimonials/wasinta.jpg"
             />
           </div>
@@ -98,7 +98,7 @@ export function Stories2() {
               name="AMINA"
               role="Restaurant owner seeking expansion capital"
               quote="My restaurant is always full. I need funding to open a second location but banks won't help."
-              bgColor="bg-[#FFD9B4]"
+              bgColor="bg-[#F8A3BE]"
               image="/images/testimonials/amina.jpg"
             />
           </div>

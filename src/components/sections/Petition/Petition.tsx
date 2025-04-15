@@ -81,51 +81,40 @@ export function Petition() {
 
         <div className="bg-white rounded-[20px] sm:rounded-[32px] border-2 sm:border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] px-4 sm:px-10 py-6 sm:py-8 bg-[url('/images/bank-bg.png')] bg-cover bg-center">
           <div className="max-w-[1200px] mx-auto">
-            <div className="flex flex-col md:flex-row items-start justify-between gap-6 sm:gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                viewport={{ once: true }}
-                className="w-full md:w-1/3"
-              >
-                <h4 className="text-2xl sm:text-3xl md:text-[48px] leading-[1.1] font-montserrat text-gray-900 mb-4 sm:mb-8 font-extrabold italic max-w-[590px] tracking-[-0.03em]">
-                  We want you to publicly commit to
-                </h4>
-                <Link href="/petition" className="hidden md:block w-full sm:w-auto">
-                  <Button 
-                    variant="primary"
-                    size="lg"
-                    className="mt-4 w-full sm:w-auto text-sm sm:text-base"
-                  >
-                    Sign the Petition
-                  </Button>
-                </Link>
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="flex justify-between items-center mb-8"
+            >
+              <h4 className="text-2xl sm:text-3xl md:text-[48px] leading-[1.1] font-montserrat text-gray-900 font-extrabold italic tracking-[-0.03em] max-w-[600px]">
+                We want you to <br />
+                publicly commit to
+              </h4>
+              <Link href="/petition">
+                <Button 
+                  variant="primary"
+                  size="lg"
+                  className="text-sm sm:text-base"
+                >
+                  Sign the Petition
+                </Button>
+              </Link>
+            </motion.div>
 
-              <div className="flex flex-col gap-4 sm:gap-8 w-full md:w-2/3 items-stretch md:items-end">
-                {demands.map((demand, index) => (
-                  <Card
-                    key={index}
-                    number={demand.number}
-                    title={demand.title}
-                    borderColor={demand.borderColor}
-                    bgColor={demand.bgColor}
-                    delay={index * 0.1}
-                  />
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+              {demands.map((demand, index) => (
+                <Card
+                  key={index}
+                  number={demand.number}
+                  title={demand.title}
+                  borderColor={demand.borderColor}
+                  bgColor={demand.bgColor}
+                  delay={index * 0.1}
+                />
+              ))}
             </div>
-
-            <Link href="/petition" className="block md:hidden w-full mt-8">
-              <Button 
-                variant="primary"
-                size="lg"
-                className="w-full text-sm sm:text-base"
-              >
-                Sign the Petition
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
