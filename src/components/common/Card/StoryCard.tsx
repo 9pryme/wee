@@ -2,9 +2,11 @@
 import { motion, useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useRef, useEffect, forwardRef, useState } from 'react'
+import Image from 'next/image'
 
 interface StoryCardProps {
   video: string
+  thumbnail?: string // Cloudinary URL
   className?: string
   bgColor?: string
   autoPlay?: boolean
@@ -15,7 +17,8 @@ interface StoryCardProps {
 }
 
 export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({ 
-  video, 
+  video,
+  thumbnail,
   className, 
   bgColor = 'bg-[#FBBD00]',
   autoPlay = false,
@@ -29,6 +32,7 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
   const internalVideoRef = useRef<HTMLVideoElement>(null)
   const combinedRef = (ref || internalVideoRef) as React.RefObject<HTMLVideoElement>
   const [isMuted, setIsMuted] = useState(muted)
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false)
 
   useEffect(() => {
     if (!combinedRef.current) return
@@ -86,6 +90,20 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
         className
       )}
     >
+      {thumbnail && !isVideoLoaded && (
+        <div className="relative w-full h-full">
+          <Image
+            src={thumbnail}
+            alt="Video thumbnail"
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={75}
+            unoptimized={false}
+          />
+        </div>
+      )}
       <video
         ref={combinedRef}
         src={video}
@@ -95,6 +113,8 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
         muted={isMuted}
         loop={loop}
         controls={controls}
+        onLoadedData={() => setIsVideoLoaded(true)}
+        poster={thumbnail}
       />
       <button
         onClick={handleMute}

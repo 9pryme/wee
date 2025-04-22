@@ -96,7 +96,8 @@ export function Hero3() {
           {/* Video */}
           <div className="relative w-full max-w-[800px] aspect-video">
             <StoryCard 
-              video="https://res.cloudinary.com/delpitwkb/video/upload/v1744481746/draft_1_ljjrvj.mp4"
+              video="https://res.cloudinary.com/delpitwkb/video/upload/v1745336998/sample_5_tfglxf.mp4"
+              thumbnail="https://res.cloudinary.com/delpitwkb/image/upload/v1745336920/thumbnail_eirfdn.jpg"
               className="mb-4 md:mb-8 rounded-[30px] md:rounded-[60px] w-full h-full object-cover"
               muted={false}
               loop={false}

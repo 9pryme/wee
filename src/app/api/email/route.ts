@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
-import { sendPetitionEmailToBank, sendConfirmationEmail } from '@/services/email'
+import { sendPetitionEmailToOrganization, sendConfirmationEmail } from '@/services/email'
 import { verifyEmailConfig } from '@/lib/nodemailer'
+
+let emailConfigVerified = false
 
 // Verify email configuration
 verifyEmailConfig()
   .then(isVerified => {
+    emailConfigVerified = isVerified
     if (!isVerified) {
-      console.error('Email configuration verification failed')
+      console.warn('Email configuration verification failed - emails will not be sent')
     }
   })
   .catch(error => {
@@ -14,12 +17,22 @@ verifyEmailConfig()
   })
 
 export async function POST(request: Request) {
+  if (!emailConfigVerified) {
+    console.warn('Email configuration not verified - skipping email send')
+    return NextResponse.json({
+      success: true,
+      orgEmailSent: false,
+      confirmationEmailSent: false,
+      warning: 'Email configuration not verified'
+    })
+  }
+
   try {
     const body = await request.json()
-    const { petitionerName, petitionerEmail, bankName, bankCode } = body
+    const { petitionerName, petitionerEmail, organizationName, organizationId } = body
 
     // Validate required fields
-    if (!petitionerName || !petitionerEmail || !bankName || !bankCode) {
+    if (!petitionerName || !petitionerEmail || !organizationName || !organizationId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -27,25 +40,27 @@ export async function POST(request: Request) {
     }
 
     // Send emails
-    const [bankEmailResult, confirmationEmailResult] = await Promise.allSettled([
-      sendPetitionEmailToBank({
+    const [orgEmailResult, confirmationEmailResult] = await Promise.allSettled([
+      sendPetitionEmailToOrganization({
         petitionerName,
         petitionerEmail,
-        bankName,
-        bankCode
+        organizationName,
+        organizationId,
+        organizationEmail: body.organizationEmail
       }),
       sendConfirmationEmail({
         petitionerName,
         petitionerEmail,
-        bankName,
-        bankCode
+        organizationName,
+        organizationId,
+        organizationEmail: body.organizationEmail
       })
     ])
 
     return NextResponse.json({
       success: true,
-      bankEmailSent: bankEmailResult.status === 'fulfilled' && bankEmailResult.value,
-      confirmationEmailSent: confirmationEmailResult.status === 'fulfilled' && confirmationEmailResult.value
+      orgEmailSent: orgEmailResult.status === 'fulfilled',
+      confirmationEmailSent: confirmationEmailResult.status === 'fulfilled'
     })
   } catch (error) {
     console.error('Error in email API route:', error)

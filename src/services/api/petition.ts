@@ -1,9 +1,14 @@
+interface PetitionSubmitResponse {
+  success: boolean
+  error?: string
+}
+
 export async function submitPetition(data: {
   name: string
   email: string
-  bank_code: string
-  bank_name: string
-}): Promise<void> {
+  organization_id: string
+  organization_name: string
+}): Promise<PetitionSubmitResponse> {
   const response = await fetch('/api/petition', {
     method: 'POST',
     headers: {
@@ -12,9 +17,11 @@ export async function submitPetition(data: {
     body: JSON.stringify(data),
   })
 
+  const result = await response.json()
+
   if (!response.ok) {
-    throw new Error('Failed to submit petition')
+    throw new Error(result.error || 'Failed to submit petition')
   }
 
-  return response.json()
+  return result
 } 

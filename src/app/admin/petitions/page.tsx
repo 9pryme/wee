@@ -14,10 +14,10 @@ const oswald = Oswald({ subsets: ['latin'] })
 interface PetitionSignature {
   id: string
   created_at: string
-  name: string
-  email: string
-  bank_code: string
-  bank_name: string
+  petitioner_name: string
+  petitioner_email: string
+  organization_id: string
+  organization_name: string
 }
 
 const columns: ColumnDef<PetitionSignature>[] = [
@@ -41,22 +41,22 @@ const columns: ColumnDef<PetitionSignature>[] = [
     ),
   },
   {
-    accessorKey: "name",
+    accessorKey: "petitioner_name",
     header: "Name",
     cell: ({ row }) => (
       <div>
-        <div className="font-medium text-gray-900">{row.getValue("name")}</div>
-        <div className="text-gray-500">{row.original.email}</div>
+        <div className="font-medium text-gray-900">{row.getValue("petitioner_name")}</div>
+        <div className="text-gray-500">{row.original.petitioner_email}</div>
       </div>
     ),
   },
   {
-    accessorKey: "bank_name",
-    header: "Bank",
+    accessorKey: "organization_name",
+    header: "Organization",
     cell: ({ row }) => (
       <div>
-        <div className="font-medium text-gray-900">{row.getValue("bank_name")}</div>
-        <div className="text-gray-500">Code: {row.original.bank_code}</div>
+        <div className="font-medium text-gray-900">{row.getValue("organization_name")}</div>
+        <div className="text-gray-500">ID: {row.original.organization_id}</div>
       </div>
     ),
   },
@@ -99,7 +99,7 @@ export default function Petitions() {
 
       if (error) throw error
 
-      setSignatures(data)
+      setSignatures(data || [])
     } catch (error) {
       logger.error('Error loading signatures:', error)
     } finally {
@@ -108,9 +108,9 @@ export default function Petitions() {
   }
 
   const filteredSignatures = signatures.filter(sig => 
-    sig.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sig.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sig.bank_name.toLowerCase().includes(searchTerm.toLowerCase())
+    (sig.petitioner_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (sig.petitioner_email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (sig.organization_name || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (

@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
 import Lottie from "lottie-react"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/common/Button/Button"
-import { getBanks } from "@/services/banks"
-import type { Bank } from "@/services/banks"
+import { getOrganizations } from "@/services/banks"
+import type { Organization } from "@/services/banks"
 import { submitPetition } from '@/services/petition'
 import { supabase } from '@/lib/supabase'
 import { 
@@ -17,6 +17,7 @@ import {
   Share2 
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 
 function getOrdinalSuffix(n: number): string {
   const j = n % 10
@@ -39,51 +40,80 @@ function getOrdinalSuffix(n: number): string {
 
 export function PetitionForm() {
   const router = useRouter()
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    bank: ""
+    organization: ""
   })
-
   const [petitionCount, setPetitionCount] = useState(0)
   const [submittedNumber, setSubmittedNumber] = useState<number | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [banks, setBanks] = useState<Bank[]>([])
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [animation, setAnimation] = useState(null)
 
+  // Always define all hooks before any conditional rendering
   useEffect(() => {
-    async function loadData() {
-      setIsLoading(true)
-      try {
-        // Load banks
-        const banksList = await getBanks()
-        setBanks(banksList)
-
-        // Get petition count
-        const { count } = await supabase
-          .from('petition_submissions')
-          .select('*', { count: 'exact' })
-        
-        setPetitionCount(count || 0)
-      } catch (error) {
-        console.error('Failed to load data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     loadData()
   }, [])
 
   useEffect(() => {
-    // Fetch the animation JSON
     fetch('/images/success.json')
       .then(res => res.json())
       .then(data => setAnimation(data))
       .catch(err => console.error('Error loading animation:', err))
   }, [])
+
+  const organizationOptions = useMemo(() => {
+    if (!organizations.length) return []
+
+    const grouped = organizations.reduce((acc, org) => {
+      // Format type for display (e.g., "bank" -> "Bank", "development_finance_institution" -> "Development Finance Institution")
+      const type = org.type
+        .split('_')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ')
+
+      if (!acc[type]) acc[type] = []
+      acc[type].push({
+        value: org.id,
+        label: org.organization_name
+      })
+      return acc
+    }, {} as Record<string, { value: string; label: string }[]>)
+
+    // Sort organizations alphabetically within each group
+    Object.keys(grouped).forEach(type => {
+      grouped[type].sort((a, b) => a.label.localeCompare(b.label))
+    })
+
+    // Convert to format expected by Select component
+    return Object.entries(grouped)
+      .sort(([a], [b]) => a.localeCompare(b)) // Sort groups alphabetically
+      .map(([type, orgs]) => ({
+        label: type,
+        options: orgs
+      }))
+  }, [organizations])
+
+  async function loadData() {
+    setIsLoading(true)
+    try {
+      const orgs = await getOrganizations()
+      setOrganizations(orgs)
+
+      const { count } = await supabase
+        .from('petition_submissions')
+        .select('*', { count: 'exact' })
+      
+      setPetitionCount(count || 0)
+    } catch (err) {
+      toast.error('Failed to load data')
+      console.error('Error loading data:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -92,21 +122,29 @@ export function PetitionForm() {
     
     if (!formData.name) newErrors.name = "Name is required"
     if (!formData.email) newErrors.email = "Email is required"
-    if (!formData.bank) newErrors.bank = "Bank selection is required"
+    if (!formData.organization) newErrors.organization = "Organization selection is required"
     
     setErrors(newErrors)
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const selectedBank = banks.find(bank => bank.code === formData.bank)
-        if (!selectedBank) throw new Error('Bank not found')
+        const selectedOrg = organizations.find(org => org.id === formData.organization)
+        console.log('Form data:', formData)
+        console.log('All organizations:', organizations)
+        console.log('Selected organization:', selectedOrg)
 
-        await submitPetition({
+        if (!selectedOrg) {
+          throw new Error('Selected organization not found')
+        }
+
+        const result = await submitPetition({
           name: formData.name,
           email: formData.email,
-          bank_code: selectedBank.code,
-          bank_name: selectedBank.name
+          organization_id: selectedOrg.id,
+          organization_name: selectedOrg.organization_name
         })
+
+        console.log('Petition submission result:', result)
 
         // Get the new count after submission
         const { count } = await supabase
@@ -119,15 +157,22 @@ export function PetitionForm() {
         setFormData({
           name: "",
           email: "",
-          bank: ""
+          organization: ""
         })
+
+        // Show success toast
+        toast.success('Petition submitted successfully!')
       } catch (error) {
         console.error('Failed to submit petition:', error)
-        alert('Failed to submit petition. Please try again.')
+        toast.error('Failed to submit petition. Please try again.')
       } finally {
         setIsLoading(false)
       }
     } else {
+      // Show validation errors
+      Object.values(newErrors).forEach(error => {
+        toast.error(error)
+      })
       setIsLoading(false)
     }
   }
@@ -237,27 +282,6 @@ export function PetitionForm() {
     )
   }
 
-  const bankOptions = [
-    {
-      label: '--- Test Banks ---',
-      options: banks
-        .filter(bank => bank.isTest)
-        .map(bank => ({
-          value: bank.code,
-          label: bank.name
-        }))
-    },
-    {
-      label: '--- All Banks ---',
-      options: banks
-        .filter(bank => !bank.isTest)
-        .map(bank => ({
-          value: bank.code,
-          label: bank.name
-        }))
-    }
-  ]
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -270,7 +294,7 @@ export function PetitionForm() {
           YOU WILL BE THE <span className="text-[#FF4D93]">{getOrdinalSuffix(petitionCount + 1)}</span> PERSON
         </h2>
         <h3 className="text-lg sm:text-xl text-black/80 font-montserrat">
-          Enter your details to send the above demands to your bank
+          Enter your details to send the above demands to your organization
         </h3>
       </div>
 
@@ -295,12 +319,18 @@ export function PetitionForm() {
         />
 
         <Select
-          label="Your Bank"
-          options={bankOptions}
-          value={formData.bank}
-          onChange={(e) => setFormData({ ...formData, bank: e.target.value })}
-          error={errors.bank}
-          disabled={isLoading}
+          label="Select Organization"
+          defaultValue="Select organization"
+          options={organizationOptions}
+          value={formData.organization}
+          onChange={(e) => {
+            const selectedId = e.target.value
+            const selectedOrg = organizations.find(org => org.id === selectedId)
+            console.log('Selected organization:', selectedOrg)
+            setFormData(prev => ({ ...prev, organization: selectedId }))
+          }}
+          error={errors.organization}
+          disabled={isLoading || !organizations.length}
           grouped={true}
         />
 
@@ -311,7 +341,7 @@ export function PetitionForm() {
           className="w-full text-white text-base sm:text-xl"
           disabled={isLoading}
         >
-          {isLoading ? 'Submitting...' : 'Tell your banks to fund women now'}
+          {isLoading ? 'Submitting...' : 'Submit your petition'}
         </Button>
       </form>
     </motion.div>

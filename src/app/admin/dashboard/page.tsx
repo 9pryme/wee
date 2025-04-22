@@ -37,7 +37,7 @@ export default function Dashboard() {
       ] = await Promise.all([
         supabase.from('petition_submissions').select('*', { count: 'exact' }),
         supabase.from('organizations').select('*', { count: 'exact' }),
-        supabase.from('banks').select('*', { count: 'exact' })
+        supabase.from('organizations').select('*', { count: 'exact' })
       ])
 
       setStats({

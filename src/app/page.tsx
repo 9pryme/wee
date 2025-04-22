@@ -9,13 +9,20 @@ import { CTA } from '@/components/sections/CTA/CTA'
 import { Ticker } from '@/components/common/Ticker/Ticker'
 import { Footer } from '@/components/layout/Footer/Footer'
 import { motion, AnimatePresence } from 'framer-motion'
+import { preloadAssets } from '@/lib/utils'
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
   const [displayText, setDisplayText] = useState('')
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
+  const [assetsLoaded, setAssetsLoaded] = useState(false)
 
   useEffect(() => {
+    // Start preloading assets immediately
+    preloadAssets().then(success => {
+      setAssetsLoaded(success)
+    })
+
     const loadingTexts = [
       "41% of us need startup funding, but we're overlooked.",
       "We drive innovation but lack financial support.", 
@@ -37,9 +44,12 @@ export default function Home() {
     const textInterval = setInterval(() => {
       if (currentTextIndex === loadingTexts.length - 1) {
         clearInterval(textInterval)
-        setTimeout(() => {
-          setLoading(false)
-        }, 2000)
+        // Only finish loading if assets are loaded
+        if (assetsLoaded) {
+          setTimeout(() => {
+            setLoading(false)
+          }, 500)
+        }
       } else {
         setCurrentTextIndex((prev) => prev + 1)
         currentIndex = 0
@@ -49,7 +59,16 @@ export default function Home() {
     return () => {
       clearInterval(textInterval)
     }
-  }, [currentTextIndex])
+  }, [currentTextIndex, assetsLoaded])
+
+  // If assets finish loading after text animation
+  useEffect(() => {
+    if (assetsLoaded && currentTextIndex === 2) {
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+    }
+  }, [assetsLoaded, currentTextIndex])
 
   if (loading) {
     return (

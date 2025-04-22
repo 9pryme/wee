@@ -1,35 +1,19 @@
-export interface Bank {
-  code: string;
+import { supabase } from "@/lib/supabase";
+
+export interface Organization {
+  id: string;
+  organization_name: string;
   name: string;
-  isTest?: boolean;
+  email: string | null;
+  type: string;
+  title: string;
 }
 
-export async function getBanks(): Promise<Bank[]> {
-  try {
-    const response = await fetch('/api/banks')
+export async function getOrganizations(): Promise<Organization[]> {
+  const { data } = await supabase
+    .from('organizations')
+    .select('*')
+    .order('organization_name')
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch banks')
-    }
-
-    const data = await response.json()
-    
-    const testBanks: Bank[] = [
-      {
-        code: 'TEST1',
-        name: 'Test Bank 1',
-        isTest: true
-      },
-      {
-        code: 'TEST2',
-        name: 'Test Bank 2',
-        isTest: true
-      }
-    ]
-
-    return [...testBanks, ...(data.banks || [])]
-  } catch (error) {
-    console.error('Error fetching banks:', error)
-    return []
-  }
+  return data || []
 } 

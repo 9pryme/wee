@@ -1,18 +1,10 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-if (!process.env.EMAIL_SERVER_HOST || !process.env.EMAIL_SERVER_PORT || !process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASSWORD) {
-  throw new Error('Missing email configuration environment variables')
+if (!process.env.RESEND_API_KEY) {
+  console.warn('Missing RESEND_API_KEY environment variable')
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: Number(process.env.EMAIL_SERVER_PORT),
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD
-  }
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface SendEmailParams {
   to: string | string[]
@@ -26,11 +18,11 @@ export const sendEmail = async ({
   to,
   subject,
   html,
-  from = process.env.EMAIL_FROM || 'noreply@weewantmore.ng',
-  replyTo
+  from = process.env.RESEND_FROM_EMAIL || 'WeeWantMore <noreply@weewantmore.ng>',
+  replyTo = process.env.RESEND_REPLY_TO_EMAIL
 }: SendEmailParams) => {
   try {
-    const info = await transporter.sendMail({
+    const result = await resend.emails.send({
       from,
       to,
       subject,
@@ -38,8 +30,8 @@ export const sendEmail = async ({
       replyTo
     })
 
-    console.log('Message sent: %s', info.messageId)
-    return { success: true, data: info }
+    console.log('Message sent:', result)
+    return { success: true, data: result }
   } catch (error) {
     console.error('Error sending email:', error)
     return { success: false, error }
@@ -47,13 +39,19 @@ export const sendEmail = async ({
 }
 
 // Verify connection configuration
-export const verifyEmailConfig = async () => {
-  try {
-    const verification = await transporter.verify()
-    console.log('Server is ready to take our messages')
-    return verification
-  } catch (error) {
-    console.error('Error verifying email configuration:', error)
+export async function verifyEmailConfig(): Promise<boolean> {
+  const requiredVars = [
+    'RESEND_API_KEY',
+    'RESEND_FROM_EMAIL',
+    'RESEND_REPLY_TO_EMAIL'
+  ]
+
+  const missingVars = requiredVars.filter(varName => !process.env[varName])
+
+  if (missingVars.length > 0) {
+    console.warn('Missing email configuration variables:', missingVars)
     return false
   }
+
+  return true
 } 

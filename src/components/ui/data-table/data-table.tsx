@@ -13,21 +13,22 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { AdminButton } from "@/components/admin/AdminButton"
 
-// Define the data structure
-interface PetitionData {
-  name: string
-  email: string
-  bank_name: string
-  bank_code: string
+// Update interface to match our current data structure
+interface PetitionSignature {
+  id: string
   created_at: string
+  petitioner_name: string
+  petitioner_email: string
+  organization_id: string
+  organization_name: string
 }
 
-interface DataTableProps<TData extends PetitionData, TValue> {
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function DataTable<TData extends PetitionData, TValue>({
+export function DataTable<TData extends PetitionSignature, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -46,7 +47,6 @@ export function DataTable<TData extends PetitionData, TValue>({
       sorting,
       rowSelection,
     },
-    pageCount: Math.ceil(data.length / 10), // 10 items per page
   })
 
   return (
@@ -64,7 +64,7 @@ export function DataTable<TData extends PetitionData, TValue>({
           Name
         </div>
         <div className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Bank
+          Organization
         </div>
         <div className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Date
@@ -86,12 +86,12 @@ export function DataTable<TData extends PetitionData, TValue>({
                 />
               </div>
               <div className="px-6 py-4">
-                <div className="font-medium text-gray-900">{row.getValue("name")}</div>
-                <div className="text-sm text-gray-500">{row.original.email}</div>
+                <div className="font-medium text-gray-900">{row.getValue("petitioner_name")}</div>
+                <div className="text-sm text-gray-500">{row.original.petitioner_email}</div>
               </div>
               <div className="px-6 py-4">
-                <div className="font-medium text-gray-900">{row.getValue("bank_name")}</div>
-                <div className="text-sm text-gray-500">Code: {row.original.bank_code}</div>
+                <div className="font-medium text-gray-900">{row.getValue("organization_name")}</div>
+                <div className="text-sm text-gray-500">ID: {row.original.organization_id}</div>
               </div>
               <div className="px-6 py-4 text-sm text-gray-900">
                 {new Date(row.getValue("created_at")).toLocaleDateString('en-US', {

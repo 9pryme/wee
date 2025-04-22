@@ -3,7 +3,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "dist",
-    "noEmit": false
+    "noEmit": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["src/scripts/**/*"]
+  "include": ["src/scripts/**/*", "src/**/*"],
+  "exclude": ["node_modules"]
 } 

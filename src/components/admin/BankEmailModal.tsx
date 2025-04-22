@@ -3,61 +3,51 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { AdminInput } from '@/components/admin/AdminInput'
 import { AdminButton } from '@/components/admin/AdminButton'
-import { getBanks } from '@/services/banks'
-import type { Bank } from '@/services/banks'
+import { getOrganizations } from '@/services/banks'
+import type { Organization } from '@/services/banks'
 
 interface BankEmailModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-interface ApiError {
-  message: string
-}
-
 export function BankEmailModal({ isOpen, onClose }: BankEmailModalProps) {
-  const [email, setEmail] = useState('')
   const [selectedBank, setSelectedBank] = useState('')
-  const [banks, setBanks] = useState<Bank[]>([])
+  const [email, setEmail] = useState('')
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
 
   useEffect(() => {
+    async function loadOrganizations() {
+      try {
+        const orgs = await getOrganizations()
+        setOrganizations(orgs)
+      } catch (error) {
+        console.error('Error loading organizations:', error)
+      }
+    }
+
     if (isOpen) {
-      loadBanks()
+      loadOrganizations()
     }
   }, [isOpen])
 
-  async function loadBanks() {
-    try {
-      const banksList = await getBanks()
-      setBanks(banksList)
-    } catch (error) {
-      console.error('Error loading banks:', error)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    if (!selectedBank || !email) return
+
     setIsLoading(true)
-
     try {
-      const bank = banks.find(b => b.code === selectedBank)
-      if (!bank) throw new Error('Bank not found') as ApiError
+      const { error } = await supabase
+        .from('organizations')
+        .update({ email })
+        .eq('id', selectedBank)
 
-      const { error: upsertError } = await supabase
-        .from('banks')
-        .upsert({ 
-          code: bank.code,
-          name: bank.name,
-          email: email 
-        })
-
-      if (upsertError) throw upsertError as ApiError
+      if (error) throw error
       onClose()
-    } catch (error: ApiError | unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+    } catch (error) {
+      console.error('Error updating email:', error)
+      alert('Failed to update email')
     } finally {
       setIsLoading(false)
     }
@@ -66,12 +56,10 @@ export function BankEmailModal({ isOpen, onClose }: BankEmailModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 font-['Oswald'] uppercase">
-            Update Bank Email
-          </h2>
+          <h2 className="text-lg font-medium">Update Bank Email</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -80,24 +68,24 @@ export function BankEmailModal({ isOpen, onClose }: BankEmailModalProps) {
           </button>
         </div>
 
-        {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-4">
-            {error}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Bank
+            </label>
+            <select
+              value={selectedBank}
+              onChange={(e) => setSelectedBank(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2"
+            >
+              <option value="">Select a bank</option>
+              {organizations.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.organization_name || org.name}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <AdminInput
-            label="Select Bank"
-            variant="select"
-            value={selectedBank}
-            onChange={(e) => setSelectedBank(e.target.value)}
-            options={banks.map(bank => ({
-              value: bank.code,
-              label: bank.name
-            }))}
-            required
-          />
 
           <AdminInput
             label="Email Address"
@@ -107,11 +95,19 @@ export function BankEmailModal({ isOpen, onClose }: BankEmailModalProps) {
             required
           />
 
-          <div className="flex justify-end gap-4 pt-4">
+          <div className="flex justify-end gap-3">
             <AdminButton
-              variant="primary"
-              type="submit"
+              type="button"
+              variant="secondary"
+              onClick={onClose}
               disabled={isLoading}
+            >
+              Cancel
+            </AdminButton>
+            <AdminButton
+              type="submit"
+              variant="primary"
+              disabled={isLoading || !selectedBank || !email}
             >
               {isLoading ? 'Updating...' : 'Update Email'}
             </AdminButton>
