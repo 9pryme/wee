@@ -7,22 +7,21 @@ interface Option {
   label: string
 }
 
-interface OptionGroup {
-  label: string
-  options: Option[]
-}
-
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string
   error?: string
-  options: Option[] | OptionGroup[]
+  options: {
+    label: string
+    options: Option[]
+  }[]
   grouped?: boolean
+  placeholder?: string
   className?: string
   containerClassName?: string
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, label, error, options, containerClassName, grouped, ...props }, ref) => {
+  ({ className, label, error, options, containerClassName, grouped, placeholder, ...props }, ref) => {
     return (
       <div className={cn("w-full space-y-2", containerClassName)}>
         {label && (
@@ -43,24 +42,28 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             {...props}
           >
-            <option value="">Select bank</option>
-            {grouped ? (
-              (options as OptionGroup[]).map((group, index) => (
-                <optgroup key={index} label={group.label}>
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {options.map((group) => (
+              grouped ? (
+                <optgroup key={group.label} label={group.label}>
                   {group.options.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
                 </optgroup>
-              ))
-            ) : (
-              (options as Option[]).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))
-            )}
+              ) : (
+                group.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))
+              )
+            ))}
           </select>
           <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
             <svg width="12" height="8" viewBox="0 0 12 8" fill="none">

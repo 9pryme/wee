@@ -320,7 +320,7 @@ export function PetitionForm() {
 
         <Select
           label="Select Organization"
-          defaultValue="Select organization"
+          placeholder="Select organization"
           options={organizationOptions}
           value={formData.organization}
           onChange={(e) => {
