@@ -52,7 +52,6 @@ export function PetitionForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [animation, setAnimation] = useState(null)
 
-  // Always define all hooks before any conditional rendering
   useEffect(() => {
     loadData()
   }, [])
@@ -67,40 +66,26 @@ export function PetitionForm() {
   const organizationOptions = useMemo(() => {
     if (!organizations.length) return []
 
-    const grouped = organizations.reduce((acc, org) => {
-      // Format type for display (e.g., "bank" -> "Bank", "development_finance_institution" -> "Development Finance Institution")
-      const type = org.type
-        .split('_')
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ')
-
-      if (!acc[type]) acc[type] = []
-      acc[type].push({
+    // Filter only banks and sort alphabetically
+    const banks = organizations
+      .filter(org => org.type === 'bank')
+      .sort((a, b) => a.organization_name.localeCompare(b.organization_name))
+      .map(org => ({
         value: org.id,
         label: org.organization_name
-      })
-      return acc
-    }, {} as Record<string, { value: string; label: string }[]>)
-
-    // Sort organizations alphabetically within each group
-    Object.keys(grouped).forEach(type => {
-      grouped[type].sort((a, b) => a.label.localeCompare(b.label))
-    })
-
-    // Convert to format expected by Select component
-    return Object.entries(grouped)
-      .sort(([a], [b]) => a.localeCompare(b)) // Sort groups alphabetically
-      .map(([type, orgs]) => ({
-        label: type,
-        options: orgs
       }))
+
+    return [{
+      label: 'Banks',
+      options: banks
+    }]
   }, [organizations])
 
   async function loadData() {
     setIsLoading(true)
     try {
       const orgs = await getOrganizations()
-      console.log('Loaded organizations:', orgs) // Debug log
+      console.log('Loaded organizations:', orgs)
       
       if (!orgs || orgs.length === 0) {
         toast.error('No organizations found. Please try again later.')

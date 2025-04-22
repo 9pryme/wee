@@ -57,9 +57,9 @@ export function OrganizationsTable({ data }: OrganizationsTableProps) {
       header: "Name",
     },
     {
-      accessorKey: "email",
-      header: "Email",
-      cell: ({ row }) => row.getValue("email") || "—"
+      accessorKey: "organizationemail",
+      header: "Organization Email",
+      cell: ({ row }) => row.getValue("organizationemail") || "—"
     }
   ]
 
