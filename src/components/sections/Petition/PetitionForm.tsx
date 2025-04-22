@@ -100,16 +100,28 @@ export function PetitionForm() {
     setIsLoading(true)
     try {
       const orgs = await getOrganizations()
+      console.log('Loaded organizations:', orgs) // Debug log
+      
+      if (!orgs || orgs.length === 0) {
+        toast.error('No organizations found. Please try again later.')
+        return
+      }
+      
       setOrganizations(orgs)
 
-      const { count } = await supabase
+      const { count, error } = await supabase
         .from('petition_submissions')
         .select('*', { count: 'exact' })
       
+      if (error) {
+        console.error('Error fetching petition count:', error)
+        throw error
+      }
+      
       setPetitionCount(count || 0)
     } catch (err) {
-      toast.error('Failed to load data')
       console.error('Error loading data:', err)
+      toast.error('Failed to load organizations. Please refresh the page.')
     } finally {
       setIsLoading(false)
     }
@@ -122,7 +134,7 @@ export function PetitionForm() {
     
     if (!formData.name) newErrors.name = "Name is required"
     if (!formData.email) newErrors.email = "Email is required"
-    if (!formData.organization) newErrors.organization = "Organization selection is required"
+    if (!formData.organization) newErrors.organization = "Bank selection is required"
     
     setErrors(newErrors)
 
@@ -134,7 +146,7 @@ export function PetitionForm() {
         console.log('Selected organization:', selectedOrg)
 
         if (!selectedOrg) {
-          throw new Error('Selected organization not found')
+          throw new Error('Selected bank not found')
         }
 
         const result = await submitPetition({
@@ -294,7 +306,7 @@ export function PetitionForm() {
           YOU WILL BE THE <span className="text-[#FF4D93]">{getOrdinalSuffix(petitionCount + 1)}</span> PERSON
         </h2>
         <h3 className="text-lg sm:text-xl text-black/80 font-montserrat">
-          Enter your details to send the above demands to your organization
+          Enter your details to send the demands to your bank
         </h3>
       </div>
 
@@ -319,8 +331,8 @@ export function PetitionForm() {
         />
 
         <Select
-          label="Select Organization"
-          placeholder="Select organization"
+          label="Select Bank"
+          placeholder="Select bank"
           options={organizationOptions}
           value={formData.organization}
           onChange={(e) => {

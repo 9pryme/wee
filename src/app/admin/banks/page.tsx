@@ -1,18 +1,17 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import { AdminButton } from '@/components/admin/AdminButton'
 import { ChevronLeft } from 'lucide-react'
 import { OrganizationsTable } from '@/components/admin/OrganizationsTable'
-import type { Organization } from '@/components/admin/OrganizationsTable'
 import { Oswald } from 'next/font/google'
+import { getOrganizationsForAdmin, type AdminOrganization } from '@/services/banks'
 
 const oswald = Oswald({ subsets: ['latin'] })
 
 export default function BanksManagement() {
   const router = useRouter()
-  const [organizations, setOrganizations] = useState<Organization[]>([])
+  const [organizations, setOrganizations] = useState<AdminOrganization[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -21,20 +20,8 @@ export default function BanksManagement() {
 
   async function loadOrganizations() {
     try {
-      const { data, error } = await supabase
-        .from('organizations')
-        .select('id, organization_name, type, title, name, email')
-        .order('organization_name', { ascending: true })
-
-      if (error) throw error
-      
-      const processedData = (data || []).map(org => ({
-        ...org,
-        type: org.type.length > 6 ? `${org.type.slice(0, 6)}...` : org.type,
-        organization_name: org.organization_name
-      }))
-      
-      setOrganizations(processedData)
+      const data = await getOrganizationsForAdmin()
+      setOrganizations(data)
     } catch (error) {
       console.error('Error loading organizations:', error)
     } finally {

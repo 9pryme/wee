@@ -9,22 +9,14 @@ import {
 } from "@tanstack/react-table"
 import { AdminButton } from "@/components/admin/AdminButton"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-
-export interface Organization {
-  id: string
-  organization_name: string
-  type: string
-  title: string
-  name: string
-  email: string
-}
+import { type AdminOrganization } from '@/services/banks'
 
 interface OrganizationsTableProps {
-  data: Organization[]
+  data: AdminOrganization[]
 }
 
 export function OrganizationsTable({ data }: OrganizationsTableProps) {
-  const columns: ColumnDef<Organization>[] = [
+  const columns: ColumnDef<AdminOrganization>[] = [
     {
       id: "select",
       header: ({ table }) => (
