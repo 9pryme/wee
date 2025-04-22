@@ -6,6 +6,8 @@ interface ButtonProps {
   onClick?: () => void;
   bgColor?: string;
   href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 }
 
 export function Button({ 

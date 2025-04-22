@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/common/Button/Button'
 
 interface TestimonialCardProps {
   name: string
@@ -10,9 +11,10 @@ interface TestimonialCardProps {
   image: string
   className?: string
   bgColor?: string
+  onClick?: () => void
 }
 
-export function TestimonialCard({ name, role, quote, image, className, bgColor = 'bg-[#B4E9FF]' }: TestimonialCardProps) {
+export function TestimonialCard({ name, role, quote, image, className, bgColor = 'bg-[#B4E9FF]', onClick }: TestimonialCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -41,6 +43,13 @@ export function TestimonialCard({ name, role, quote, image, className, bgColor =
                 {quote}
               </p>
             </div>
+            <Button 
+              variant="primary" 
+              className="font-['Oswald'] text-lg"
+              onClick={onClick}
+            >
+              Watch her story
+            </Button>
           </div>
         </div>
 

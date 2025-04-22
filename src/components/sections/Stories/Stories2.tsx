@@ -2,9 +2,11 @@
 import { motion } from 'framer-motion'
 import { TestimonialCard } from '@/components/common/Card/TestimonialCard'
 import { useState, useEffect } from 'react'
+import { X } from 'lucide-react'
 
 export function Stories2() {
   const [isMobile, setIsMobile] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
 
   useEffect(() => {
     const checkMobile = () => {
@@ -16,14 +18,84 @@ export function Stories2() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
+  const getGoogleDriveEmbedUrl = (url: string) => {
+    const fileId = url.match(/[-\w]{25,}/)
+    if (fileId) {
+      return `https://drive.google.com/file/d/${fileId[0]}/preview`
+    }
+    return url
+  }
+
+  const testimonials = [
+    {
+      name: "Nanaah",
+      role: "Event Caterer, small chops vendor",
+      quote: "I need funding to expand my business and produce at scale",
+      bgColor: "bg-[#B4E9FF]",
+      image: "/images/testimonials/nanaah.jpg",
+      video: "https://drive.google.com/file/d/1X1lgBIIybgCM0ylA7ey2ZI45KoyFfWW-/view?usp=drive_link"
+    },
+    {
+      name: "Miracle Ademu Eteh",
+      role: "Fashion entrepreneur",
+      quote: "I need capital to open a physical fashion store",
+      bgColor: "bg-[#98E9D0]",
+      image: "/images/testimonials/miracle.jpg",
+      video: "https://drive.google.com/file/d/1KTpeHaEOkB0KwZ1dZLJ2eyGsNz_LJloK/view?usp=drive_link"
+    },
+    {
+      name: "Wasinta Buba",
+      role: "Fashion Designer", 
+      quote: "I need funding to expand my fashion business and open more branches",
+      bgColor: "bg-[#F8A3BE]",
+      image: "/images/testimonials/wasinta.jpg",
+      video: "https://drive.google.com/file/d/1i6l-E5KZhsyp1vaf2pRVXDGBM0Y5uhUo/view?usp=drive_link"
+    },
+    {
+      name: "Ife",
+      role: "Hairstylist",
+      quote: "I need capital to open a salon",
+      bgColor: "bg-[#B4E9FF]",
+      image: "/images/testimonials/ife.jpg",
+      video: "https://drive.google.com/drive/folders/1uoofX6kbhAB01Z7otGmwC62qdxdAhPPd"
+    },
+    {
+      name: "Chef OB",
+      role: "Chef",
+      quote: "I need funding to start my culinary school",
+      bgColor: "bg-[#98E9D0]",
+      image: "/images/testimonials/chefob.jpg",
+      video: "https://drive.google.com/file/d/1ERadfAEXX5K-mrFot_TeT3xxpo5kymmP/view?usp=drive_link"
+    }
+  ]
+
   return (
-    <section className="min-h-[40vh] md:min-h-[80vh] relative py-12 md:py-20 bg-white">
+    <section className="min-h-[40vh] md:min-h-[80vh] relative py-12 md:py-20 bg-[#ED323D]">
+      {selectedVideo && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl aspect-video">
+            <button 
+              onClick={() => setSelectedVideo(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300"
+            >
+              <X size={32} />
+            </button>
+            <iframe
+              src={getGoogleDriveEmbedUrl(selectedVideo)}
+              className="w-full h-full rounded-lg"
+              allow="autoplay"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="text-3xl md:text-6xl font-['Oswald'] font-bold text-black uppercase text-center mb-10 md:mb-16 max-w-[1200px] mx-auto px-4"
+        className="text-3xl md:text-6xl font-['Oswald'] font-bold text-white uppercase text-center mb-10 md:mb-16 max-w-[1200px] mx-auto px-4"
       >
         NIGERIAN WOMEN <br />
         ARE READY TO GROW
@@ -32,12 +104,13 @@ export function Stories2() {
         <motion.div 
           className="flex gap-4 md:gap-8 px-4"
           animate={{
-            x: isMobile ? [0, -1050] : [0, -2100],
+            x: isMobile ? [-1050, 0] : [-3000, 0],
           }}
           transition={{
             x: {
               repeat: Infinity,
-              duration: isMobile ? 15 : 20,
+              repeatType: "loop",
+              duration: isMobile ? 30 : 40,
               ease: "linear",
             },
           }}
@@ -46,62 +119,19 @@ export function Stories2() {
             height: isMobile ? "450px" : "550px"
           }}
         >
-          {/* First set of cards */}
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="Nanaah"
-              role="Event Caterer, small chops vendor"
-              quote="I need funding to expand my business and produce at scale"
-              bgColor="bg-[#B4E9FF]"
-              image="/images/testimonials/nanaah.jpg"
-            />
-          </div>
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="Miracle Ademu Eteh"
-              role="Fashion entrepreneur"
-              quote="I need capital to open a physical fashion store"
-              bgColor="bg-[#98E9D0]"
-              image="/images/testimonials/miracle.jpg"
-            />
-          </div>
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="Wasinta Buba"
-              role="Fashion Designer"
-              quote="I need funding to expand my fashion business and open more branches"
-              bgColor="bg-[#F8A3BE]"
-              image="/images/testimonials/wasinta.jpg"
-            />
-          </div>
-          {/* Duplicate set for seamless loop */}
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="Ife"
-              role="Hairstylist"
-              quote="I need capital to open a salon"
-              bgColor="bg-[#B4E9FF]"
-              image="/images/testimonials/ife.jpg"
-            />
-          </div>
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="Chef OB"
-              role="Chef"
-              quote="I need funding to start my culinary school"
-              bgColor="bg-[#98E9D0]"
-              image="/images/testimonials/chefob.jpg"
-            />
-          </div>
-          <div className="w-[300px] md:w-[1000px] flex-shrink-0">
-            <TestimonialCard
-              name="AMINA"
-              role="Restaurant owner seeking expansion capital"
-              quote="My restaurant is always full. I need funding to open a second location but banks won't help."
-              bgColor="bg-[#F8A3BE]"
-              image="/images/testimonials/amina.jpg"
-            />
-          </div>
+          {/* Triple the testimonials for smoother infinite scroll */}
+          {[...testimonials, ...testimonials, ...testimonials].map((testimonial, i) => (
+            <div key={i} className="w-[300px] md:w-[1000px] flex-shrink-0">
+              <TestimonialCard
+                name={testimonial.name}
+                role={testimonial.role}
+                quote={testimonial.quote}
+                bgColor={testimonial.bgColor}
+                image={testimonial.image}
+                onClick={() => setSelectedVideo(testimonial.video)}
+              />
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>

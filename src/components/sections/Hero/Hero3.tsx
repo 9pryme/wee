@@ -2,50 +2,30 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { BackgroundBeams } from '@/components/ui/background-beams'
+import { StoryCard } from '@/components/common/Card/StoryCard'
+import Image from 'next/image'
 
 export function Hero3() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
+  const [userInteracted, setUserInteracted] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
-  // Create refs for all videos upfront
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-
-  // Create a callback function for setting refs
-  const setVideoRef = (index: number) => (el: HTMLVideoElement | null) => {
-    videoRefs.current[index] = el
-    if (el) {
-      el.currentTime = 6
+  const handleUserInteraction = () => {
+    setUserInteracted(true)
+    if (videoRef.current) {
+      videoRef.current.play()
     }
   }
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   const texts = [
     {
       text: ["WE DRIVE 50% OF", "NIGERIA'S ECONOMY. BUT BANKS", "GIVE US LESS THAN 10% OF SME LOANS."],
-      className: "text-3xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
+      className: "text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-black font-['Oswald'] tracking-[-0.04em] text-center"
     },
     {
       text: ["62% OF US CAN'T GROW", "OUR BUSINESSES BECAUSE", "BANKS WON'T GIVE US LOANS."],
-      className: "text-3xl md:text-6xl font-bold text-[#F8EFE2] font-['Oswald'] tracking-[-0.04em] drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] text-center"
+      className: "text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-black font-['Oswald'] tracking-[-0.04em] text-center"
     }
-  ]
-
-  const videos = [
-    { id: 1, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630877/xgcwcpgpmqitpegvpujk.mp4" },
-    { id: 2, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630868/s2ujgiox4bheaz68d2cn.mp4" },
-    { id: 3, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630867/svtfpy6gc0ra1mtgelxa.mp4" },
-    { id: 4, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630852/mywzouiypacw0dgnacch.mp4" },
-    { id: 5, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630842/e0el5pkjd4zsgzpkpznx.mp4" }
   ]
 
   useEffect(() => {
@@ -61,52 +41,38 @@ export function Hero3() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-[90vh] relative bg-black overflow-hidden flex items-center justify-center"
+      className="min-h-[90vh] relative overflow-hidden flex items-center justify-center bg-'#2ECEB0'"
     >
       {/* Background with Beams */}
       <div className="absolute inset-0 z-0">
         <BackgroundBeams className="opacity-30" />
       </div>
 
-      {/* Video Modal */}
-      <AnimatePresence>
-        {selectedVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedVideo(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="relative w-full max-w-3xl aspect-video bg-black rounded-lg overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <video
-                src={selectedVideo}
-                className="w-full h-full"
-                controls
-                autoPlay
-              />
-              <button
-                onClick={() => setSelectedVideo(null)}
-                className="absolute top-4 right-4 text-white hover:text-gray-300"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Left Hand */}
+      <div className="absolute left-0 bottom-0 z-10 hidden md:block">
+        <Image
+          src="/images/left.png"
+          alt="Left Hand"
+          width={300}
+          height={400}
+          className="object-contain"
+        />
+      </div>
+
+      {/* Right Hand */}
+      <div className="absolute right-0 bottom-0 z-10 hidden md:block">
+        <Image
+          src="/images/right.png"
+          alt="Right Hand"
+          width={300}
+          height={400}
+          className="object-contain"
+        />
+      </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col items-center w-full gap-12">
+      <div className="relative z-10 container mx-auto px-4 py-8 mt-20 md:mt-32">
+        <div className="flex flex-col items-center w-full gap-12 md:gap-16">
           {/* Text Content */}
           <div className="w-full max-w-4xl">
             <AnimatePresence mode="wait" initial={false}>
@@ -116,7 +82,7 @@ export function Hero3() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-4"
+                className="space-y-2 md:space-y-4"
               >
                 <div className={texts[currentTextIndex].className}>
                   {texts[currentTextIndex].text.map((line, index) => (
@@ -127,63 +93,28 @@ export function Hero3() {
             </AnimatePresence>
           </div>
 
-          {/* Video Grid */}
-          <div className="w-full max-w-4xl overflow-hidden relative">
-            {/* Mobile fade overlays */}
-            {isMobile && (
-              <>
-                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black to-transparent z-10" />
-                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black to-transparent z-10" />
-              </>
+          {/* Video */}
+          <div className="relative w-full max-w-[800px] aspect-video">
+            <StoryCard 
+              video="https://res.cloudinary.com/delpitwkb/video/upload/v1744481746/draft_1_ljjrvj.mp4"
+              className="mb-4 md:mb-8 rounded-[30px] md:rounded-[60px] w-full h-full object-cover"
+              muted={false}
+              loop={false}
+              controls={false}
+              autoPlay={false}
+              onEnded={() => setUserInteracted(false)}
+              ref={videoRef}
+            />
+            {!userInteracted && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white text-black px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold text-sm md:text-base"
+                onClick={handleUserInteraction}
+              >
+                Click to Play Video
+              </motion.button>
             )}
-            <motion.div 
-              className="flex md:grid md:grid-cols-5 gap-3 w-full"
-              {...(isMobile ? {
-                initial: { x: "0%" },
-                animate: { x: "-50%" },
-                transition: {
-                  x: {
-                    duration: 20,
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    ease: "linear",
-                  }
-                }
-              } : {})}
-            >
-              {(isMobile ? [...videos, ...videos] : videos).map((item, index) => (
-                <motion.div
-                  key={`${item.id}-${index}`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-[150px] md:w-auto flex-shrink-0 aspect-square relative rounded-lg overflow-hidden shadow-lg cursor-pointer"
-                  onClick={() => setSelectedVideo(item.video)}
-                >
-                  <video
-                    ref={setVideoRef(index)}
-                    src={item.video}
-                    className="w-full h-full object-cover"
-                    preload="metadata"
-                  >
-                    <track kind="captions" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
-                    <motion.div
-                      whileHover={{ scale: 1.2 }}
-                      className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
-                    >
-                      <svg
-                        className="w-4 h-4 text-black"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
           </div>
         </div>
       </div>

@@ -55,6 +55,7 @@ export function PetitionForm() {
 
   useEffect(() => {
     async function loadData() {
+      setIsLoading(true)
       try {
         // Load banks
         const banksList = await getBanks()
@@ -86,6 +87,7 @@ export function PetitionForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     const newErrors: Record<string, string> = {}
     
     if (!formData.name) newErrors.name = "Name is required"
@@ -122,7 +124,11 @@ export function PetitionForm() {
       } catch (error) {
         console.error('Failed to submit petition:', error)
         alert('Failed to submit petition. Please try again.')
+      } finally {
+        setIsLoading(false)
       }
+    } else {
+      setIsLoading(false)
     }
   }
 
@@ -231,10 +237,26 @@ export function PetitionForm() {
     )
   }
 
-  const bankOptions = banks.map(bank => ({
-    value: bank.code,
-    label: bank.name
-  }))
+  const bankOptions = [
+    {
+      label: '--- Test Banks ---',
+      options: banks
+        .filter(bank => bank.isTest)
+        .map(bank => ({
+          value: bank.code,
+          label: bank.name
+        }))
+    },
+    {
+      label: '--- All Banks ---',
+      options: banks
+        .filter(bank => !bank.isTest)
+        .map(bank => ({
+          value: bank.code,
+          label: bank.name
+        }))
+    }
+  ]
 
   return (
     <motion.div
@@ -259,6 +281,7 @@ export function PetitionForm() {
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           error={errors.name}
+          disabled={isLoading}
         />
 
         <Input
@@ -268,6 +291,7 @@ export function PetitionForm() {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           error={errors.email}
+          disabled={isLoading}
         />
 
         <Select
@@ -277,6 +301,7 @@ export function PetitionForm() {
           onChange={(e) => setFormData({ ...formData, bank: e.target.value })}
           error={errors.bank}
           disabled={isLoading}
+          grouped={true}
         />
 
         <Button
@@ -284,8 +309,9 @@ export function PetitionForm() {
           size="lg"
           bgColor="bg-[#ED323D]"
           className="w-full text-white text-base sm:text-xl"
+          disabled={isLoading}
         >
-          Tell your banks to fund women now
+          {isLoading ? 'Submitting...' : 'Tell your banks to fund women now'}
         </Button>
       </form>
     </motion.div>

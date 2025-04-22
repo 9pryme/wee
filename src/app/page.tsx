@@ -9,23 +9,20 @@ import { CTA } from '@/components/sections/CTA/CTA'
 import { Ticker } from '@/components/common/Ticker/Ticker'
 import { Footer } from '@/components/layout/Footer/Footer'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
-  const [progress, setProgress] = useState(0)
   const [displayText, setDisplayText] = useState('')
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
 
   useEffect(() => {
     const loadingTexts = [
       "41% of us need startup funding, but we're overlooked.",
-      "We drive innovation but lack financial support.",
+      "We drive innovation but lack financial support.", 
       "Our businesses could thrive with proper funding."
     ]
 
     let currentIndex = 0
-    const progressPerText = 33.33
 
     const typeText = () => {
       if (currentIndex < loadingTexts[currentTextIndex].length) {
@@ -36,16 +33,17 @@ export default function Home() {
     }
 
     typeText()
-    setProgress(progressPerText * (currentTextIndex + 1))
 
     const textInterval = setInterval(() => {
       if (currentTextIndex === loadingTexts.length - 1) {
         clearInterval(textInterval)
-        setLoading(false)
-        return
+        setTimeout(() => {
+          setLoading(false)
+        }, 2000)
+      } else {
+        setCurrentTextIndex((prev) => prev + 1)
+        currentIndex = 0
       }
-      setCurrentTextIndex((prev) => prev + 1)
-      currentIndex = 0
     }, 2000)
 
     return () => {
@@ -55,33 +53,20 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-black gap-8">
+      <div 
+        className="h-screen w-screen flex flex-col items-center justify-center bg-black gap-8"
+      >
         <div className="flex flex-col items-center gap-8">
-          <Image 
-            src="/logo/logo.png"
-            alt="Logo"
-            width={200}
-            height={80}
-            priority
-          />
-          <div className="h-[120px] flex items-center"> {/* Fixed height container */}
+          <div className="h-[120px] flex items-center">
             <motion.p
               key={currentTextIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-white text-2xl md:text-4xl text-center max-w-3xl px-4"
+              className="text-white text-2xl md:text-4xl text-center max-w-3xl px-4 font-bold"
             >
               {displayText}
             </motion.p>
-          </div>
-          <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-white rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5 }}
-            />
           </div>
         </div>
       </div>
@@ -97,10 +82,13 @@ export default function Home() {
           duration: 1.2,
           ease: "easeOut"
         }}
+        className="bg-[#2ECEB0]"
       >
         <Header />
         <main className="min-h-screen">
-          <Hero3 />
+          <div id="hero3-section">
+            <Hero3 />
+          </div>
           <div className="relative z-50">
             <Ticker 
               items={["WHERE'S OUR MONEY?"]} 

@@ -17,6 +17,12 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 interface BankData {
   code: string
   name: string
+  email?: string
+  additional_emails?: string[]
+}
+
+interface BankResponse {
+  banks: BankData[]
 }
 
 async function syncBanks() {
@@ -31,19 +37,26 @@ async function syncBanks() {
 
     if (!response.ok) throw new Error('Failed to fetch banks')
     
-    const data = await response.json()
-    const banks = data.banks.map((bank: BankData) => ({
+    const data = await response.json() as BankResponse
+    const banks: BankData[] = data.banks.map((bank: BankData) => ({
       code: bank.code,
-      name: bank.name
+      name: bank.name,
+      email: bank.email || `contact@${bank.name.toLowerCase().replace(/\s+/g, '')}.com`,
+      additional_emails: bank.additional_emails || []
     }))
 
     // Upsert banks to Supabase
     const { error } = await supabase
       .from('banks')
-      .upsert(banks, { 
-        onConflict: 'code',
-        ignoreDuplicates: false 
-      })
+      .upsert(
+        banks.map((bank: BankData) => ({
+          code: bank.code,
+          name: bank.name,
+          email: bank.email || `contact@${bank.name.toLowerCase().replace(/\s+/g, '')}.com`,
+          additional_emails: bank.additional_emails || []
+        })),
+        { onConflict: 'code' }
+      )
 
     if (error) throw error
     console.log('Successfully synced banks')

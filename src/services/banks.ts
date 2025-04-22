@@ -1,6 +1,7 @@
 export interface Bank {
   code: string;
   name: string;
+  isTest?: boolean;
 }
 
 export async function getBanks(): Promise<Bank[]> {
@@ -12,7 +13,21 @@ export async function getBanks(): Promise<Bank[]> {
     }
 
     const data = await response.json()
-    return data.banks || []
+    
+    const testBanks: Bank[] = [
+      {
+        code: 'TEST1',
+        name: 'Test Bank 1',
+        isTest: true
+      },
+      {
+        code: 'TEST2',
+        name: 'Test Bank 2',
+        isTest: true
+      }
+    ]
+
+    return [...testBanks, ...(data.banks || [])]
   } catch (error) {
     console.error('Error fetching banks:', error)
     return []
