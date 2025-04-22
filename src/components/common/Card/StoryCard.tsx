@@ -1,7 +1,7 @@
 'use client'
 import { motion, useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { useRef, useEffect, forwardRef } from 'react'
+import { useRef, useEffect, forwardRef, useState } from 'react'
 
 interface StoryCardProps {
   video: string
@@ -28,6 +28,7 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
   const isInView = useInView(cardRef, { amount: 0.5 })
   const internalVideoRef = useRef<HTMLVideoElement>(null)
   const combinedRef = (ref || internalVideoRef) as React.RefObject<HTMLVideoElement>
+  const [isMuted, setIsMuted] = useState(muted)
 
   useEffect(() => {
     if (!combinedRef.current) return
@@ -38,7 +39,7 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
 
       try {
         if (isInView && autoPlay) {
-          videoElement.muted = muted
+          videoElement.muted = isMuted
           videoElement.playsInline = true
           const playPromise = videoElement.play()
           if (playPromise !== undefined) {
@@ -55,7 +56,7 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
     }
 
     playVideo()
-  }, [isInView, autoPlay, muted])
+  }, [isInView, autoPlay, isMuted, combinedRef])
 
   useEffect(() => {
     const videoElement = combinedRef.current
@@ -63,7 +64,15 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
 
     videoElement.addEventListener('ended', onEnded)
     return () => videoElement.removeEventListener('ended', onEnded)
-  }, [onEnded])
+  }, [onEnded, combinedRef])
+
+  const handleMute = () => {
+    const videoElement = combinedRef.current
+    if (!videoElement) return
+
+    setIsMuted(!isMuted)
+    videoElement.muted = !isMuted
+  }
 
   return (
     <motion.div
@@ -83,10 +92,16 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
         className="w-full h-full object-cover"
         playsInline
         autoPlay={autoPlay}
-        muted={muted}
+        muted={isMuted}
         loop={loop}
         controls={controls}
       />
+      <button
+        onClick={handleMute}
+        className="absolute top-4 right-4 bg-white/80 hover:bg-white p-2 rounded-full z-10"
+      >
+        {isMuted ? '🔇' : '🔊'}
+      </button>
     </motion.div>
   )
 })

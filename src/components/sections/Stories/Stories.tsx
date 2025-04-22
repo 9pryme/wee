@@ -19,7 +19,7 @@ export function Stories() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 400
+      const scrollAmount = window.innerWidth < 768 ? 300 : 400 // Smaller scroll amount on mobile
       const newScrollPosition = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
       scrollContainerRef.current.scrollTo({
         left: newScrollPosition,
@@ -35,17 +35,17 @@ export function Stories() {
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
-      className="py-20 md:py-32 min-h-[60vh] bg-[#592784] overflow-hidden"
+      className="py-8 md:py-32 min-h-[40vh] md:min-h-[60vh] bg-[#592784] overflow-hidden"
     >
       {/* Video Overlay */}
       {overlayVideo && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4">
           <div className="relative w-full max-w-4xl aspect-video">
             <button 
               onClick={() => setOverlayVideo(null)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300"
+              className="absolute -top-8 sm:-top-12 right-0 text-white hover:text-gray-300"
             >
-              <X size={32} />
+              <X size={24} className="sm:w-8 sm:h-8" />
             </button>
             <video 
               src={overlayVideo}
@@ -59,35 +59,35 @@ export function Stories() {
       )}
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4">
-        <div className="h-[100px]" /> {/* Added spacing */}
+      <div className="relative z-10 container mx-auto px-2 sm:px-4">
+        <div className="h-[40px] sm:h-[100px]" /> {/* Adjusted spacing for mobile */}
         <div className="relative flex justify-center">
-          <div className="relative w-[90vw] md:w-[80vw]">
+          <div className="relative w-[95vw] sm:w-[90vw] md:w-[80vw]">
             {/* Left Arrow */}
             <button 
               onClick={() => scroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 p-2 rounded-full text-white hover:bg-black transition-colors"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 p-1.5 sm:p-2 rounded-full text-white hover:bg-black transition-colors"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={20} className="sm:w-6 sm:h-6" />
             </button>
 
             {/* Right Arrow */}
             <button 
               onClick={() => scroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 p-2 rounded-full text-white hover:bg-black transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 p-1.5 sm:p-2 rounded-full text-white hover:bg-black transition-colors"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={20} className="sm:w-6 sm:h-6" />
             </button>
 
             {/* Left Fade */}
-            <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-[#592784] to-transparent pointer-events-none z-[1]" />
+            <div className="absolute left-0 top-0 w-12 sm:w-20 h-full bg-gradient-to-r from-[#592784] to-transparent pointer-events-none z-[1]" />
 
             {/* Right Fade */}
-            <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-[#592784] to-transparent pointer-events-none z-[1]" />
+            <div className="absolute right-0 top-0 w-12 sm:w-20 h-full bg-gradient-to-l from-[#592784] to-transparent pointer-events-none z-[1]" />
 
             <div 
               ref={scrollContainerRef}
-              className="flex gap-5 overflow-x-auto overflow-y-hidden pb-4 scroll-smooth scrollbar-hide"
+              className="flex gap-3 sm:gap-5 overflow-x-auto overflow-y-hidden pb-4 scroll-smooth scrollbar-hide"
             >
               {videos.map((video) => (
                 <motion.div
@@ -102,14 +102,14 @@ export function Stories() {
                   <StoryCard 
                     video={video.video}
                     bgColor="bg-[#FBBD00]"
-                    className="w-[400px] sm:w-[450px] h-[300px] sm:h-[350px]"
+                    className="w-[280px] xs:w-[320px] sm:w-[450px] h-[210px] xs:h-[240px] sm:h-[350px]"
                     autoPlay={false}
                     muted={true}
                     controls={false}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors rounded-[20px] sm:rounded-[32px]">
-                    <div className="bg-white/90 p-3 rounded-full">
-                      <Play size={24} className="text-black" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors rounded-[16px] sm:rounded-[32px]">
+                    <div className="bg-white/90 p-2 sm:p-3 rounded-full">
+                      <Play size={20} className="sm:w-6 sm:h-6 text-black" />
                     </div>
                   </div>
                 </motion.div>

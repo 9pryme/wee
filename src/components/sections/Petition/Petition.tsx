@@ -47,7 +47,7 @@ export function Petition() {
       </div>
 
       {/* Up arrow image */}
-      <div className="absolute right-4 top-4 sm:right-8 sm:top-8 z-10">
+      <div className="absolute right-4 top-4 sm:right-8 sm:top-8 z-10 hidden sm:block">
         <Image
           src="/images/up.png"
           alt="Scroll to top"
