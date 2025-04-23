@@ -14,17 +14,17 @@ export function AdminButton({
   disabled = false,
   ...props
 }: AdminButtonProps) {
-  const baseStyles = "font-montserrat font-bold text-[18px] text-black transition-all duration-300 rounded-[60px] border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+  const baseStyles = "font-medium transition-all duration-300 rounded-[60px]"
   
   const sizeStyles = {
-    sm: "px-4 py-2",
-    md: "px-6 py-3",
-    lg: "px-8 py-4"
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-8 py-4 text-lg"
   }
 
   const variantStyles = {
-    primary: "bg-[#2ECEB0] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[4px] active:shadow-none",
-    secondary: "bg-transparent border-2 border-white hover:bg-white/10"
+    primary: "bg-black hover:bg-gray-800 text-white",
+    secondary: "border border-gray-600 text-gray-600 hover:border-gray-800 hover:text-gray-800"
   }
 
   const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : ''

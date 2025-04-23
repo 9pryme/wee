@@ -29,6 +29,10 @@ export default function BanksManagement() {
     }
   }
 
+  const handleDelete = (id: string) => {
+    setOrganizations(prev => prev.filter(org => org.id !== id))
+  }
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-[calc(100vh-64px)]">Loading...</div>
   }
@@ -61,7 +65,7 @@ export default function BanksManagement() {
         </div>
       </div>
 
-      <OrganizationsTable data={organizations} />
+      <OrganizationsTable data={organizations} onDelete={handleDelete} />
     </div>
   )
 }
