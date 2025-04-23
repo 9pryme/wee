@@ -72,6 +72,11 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
     {
       accessorKey: "organization_name",
       header: "Organization Name",
+      cell: ({ row }) => (
+        <div className="truncate max-w-[200px]">
+          {row.getValue("organization_name")}
+        </div>
+      ),
     },
     {
       accessorKey: "type",
@@ -79,7 +84,7 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
       cell: ({ row }) => {
         const type = row.getValue("type") as string
         return (
-          <div className="capitalize">
+          <div className="capitalize truncate max-w-[150px]">
             {type.split('_').join(' ')}
           </div>
         )
@@ -88,11 +93,20 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => (
+        <div className="truncate max-w-[150px]">
+          {row.getValue("name")}
+        </div>
+      ),
     },
     {
       accessorKey: "organizationemail",
       header: "Organization Email",
-      cell: ({ row }) => row.getValue("organizationemail") || "—"
+      cell: ({ row }) => (
+        <div className="truncate max-w-[200px]">
+          {row.getValue("organizationemail") || "—"}
+        </div>
+      ),
     },
     {
       id: 'actions',
@@ -132,8 +146,8 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
   return (
     <>
       <div className="w-full flex flex-col border border-gray-200 rounded-md">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div>
+          <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
@@ -157,7 +171,7 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td key={cell.id} className="px-6 py-4 text-sm text-gray-900">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -237,4 +251,4 @@ export function OrganizationsTable({ data, onDelete }: OrganizationsTableProps) 
       )}
     </>
   )
-} 
+}

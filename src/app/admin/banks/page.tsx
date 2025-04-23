@@ -38,7 +38,7 @@ export default function BanksManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[1400px] mx-auto px-4">
       <button
         onClick={() => router.push('/admin/dashboard')}
         className="inline-flex items-center px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
