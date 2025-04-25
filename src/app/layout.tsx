@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import PerformanceMonitor from '@/components/analytics/PerformanceMonitor'
 import AnalyticsTestButton from '@/components/analytics/AnalyticsTestButton'
+import { Analytics } from "@vercel/analytics/react"
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({
         {children}
         <Toaster position="top-center" />
         <AnalyticsTestButton />
+        <Analytics />
       </body>
     </html>
   )
