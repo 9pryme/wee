@@ -45,7 +45,8 @@ export default function PetitionPage() {
                 />
               </div>
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-['Oswald'] font-bold uppercase">
-                Tell Your Bank to Fund Women Now
+                <span className="block">Tell Your Bank</span>
+                <span className="block">to Fund Women Now</span>
               </h1>
             </motion.div>
 

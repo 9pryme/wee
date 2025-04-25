@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 interface StoryCardProps {
   video: string
-  thumbnail?: string // Cloudinary URL
+  thumbnail?: string // Can be Cloudinary URL or path from public folder
   className?: string
   bgColor?: string
   autoPlay?: boolean
@@ -78,6 +78,10 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
     videoElement.muted = !isMuted
   }
 
+  const isCloudinaryUrl = (url: string) => {
+    return url.startsWith('http://') || url.startsWith('https://')
+  }
+
   return (
     <motion.div
       ref={cardRef}
@@ -100,7 +104,7 @@ export const StoryCard = forwardRef<HTMLVideoElement, StoryCardProps>(({
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             quality={75}
-            unoptimized={false}
+            unoptimized={isCloudinaryUrl(thumbnail)}
           />
         </div>
       )}
