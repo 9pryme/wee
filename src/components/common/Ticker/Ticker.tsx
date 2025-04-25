@@ -9,7 +9,7 @@ interface TickerProps {
 
 export function Ticker({ items, duration = 60, className = '' }: TickerProps) {
   return (
-    <div className="w-full bg-[#ED323D] border-t-[5px] border-t-[#FBBD00] border-b-[5px] border-b-[#592884] overflow-hidden flex items-center justify-center">
+    <div className="w-full bg-[#ED323D] border-t-[5px] border-t-[#592884] border-b-[5px] border-b-[#FBBD00] overflow-hidden flex items-center justify-center">
       <div className="relative w-full flex items-center justify-center h-full">
         <motion.div
           initial={{ x: "0%" }}

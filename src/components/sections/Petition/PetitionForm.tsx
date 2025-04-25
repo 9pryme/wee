@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
-import Lottie from "lottie-react"
+import dynamic from 'next/dynamic'
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/common/Button/Button"
@@ -16,8 +16,14 @@ import {
   Facebook, 
   Share2 
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { cn } from '@/lib/utils'
+import { trackEvent, EventCategory, EventAction } from '@/lib/analytics'
+
+// Import Lottie dynamically with SSR disabled
+const Lottie = dynamic(() => import('lottie-react'), {
+  ssr: false
+})
 
 function getOrdinalSuffix(n: number): string {
   const j = n % 10
@@ -39,7 +45,6 @@ function getOrdinalSuffix(n: number): string {
 }
 
 export function PetitionForm() {
-  const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -61,6 +66,14 @@ export function PetitionForm() {
       .then(res => res.json())
       .then(data => setAnimation(data))
       .catch(err => console.error('Error loading animation:', err))
+  }, [])
+
+  useEffect(() => {
+    trackEvent({
+      action: EventAction.SIGN_UP_INITIATED,
+      category: EventCategory.PETITION,
+      label: 'Petition form viewed'
+    })
   }, [])
 
   const organizationOptions = useMemo(() => {
@@ -157,6 +170,14 @@ export function PetitionForm() {
           organization: ""
         })
 
+        // Track successful submission
+        trackEvent({
+          action: EventAction.PETITION_SIGNED,
+          category: EventCategory.PETITION,
+          label: selectedOrg?.organization_name,
+          value: submittedNumber ?? undefined
+        })
+
         // Show success toast
         toast.success('Petition submitted successfully!')
       } catch (error) {
@@ -178,6 +199,12 @@ export function PetitionForm() {
   const shareUrl = "https://weewantmore.ng/petition"
 
   const handleShare = async () => {
+    trackEvent({
+      action: EventAction.SHARE_CLICKED,
+      category: EventCategory.ENGAGEMENT,
+      label: 'native_share'
+    })
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -191,10 +218,38 @@ export function PetitionForm() {
     }
   }
 
-  const socialLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-    instagram: `https://instagram.com/`,
+  const handleSocialShare = (platform: 'twitter' | 'facebook' | 'instagram') => {
+    trackEvent({
+      action: EventAction.SHARE_CLICKED,
+      category: EventCategory.ENGAGEMENT,
+      label: platform
+    })
+
+    const urls = {
+      twitter: {
+        web: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+        app: `twitter://post?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`
+      },
+      facebook: {
+        web: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+        app: `fb://share?u=${encodeURIComponent(shareUrl)}`
+      },
+      instagram: {
+        web: `https://instagram.com/`,
+        app: `instagram://share?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`
+      }
+    }
+
+    try {
+      window.location.href = urls[platform].app
+      
+      setTimeout(() => {
+        window.location.href = urls[platform].web
+      }, 2000)
+    } catch {
+      // Fallback to web version if app fails
+      window.open(urls[platform].web, '_blank')
+    }
   }
 
   if (submittedNumber !== null) {
@@ -203,11 +258,13 @@ export function PetitionForm() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[500px] mx-auto bg-[#F8EFE2] p-4 sm:p-8 rounded-lg min-h-[600px] flex flex-col"
+        className={cn(
+          "relative bg-[#F8EFE2] rounded-[20px] sm:rounded-[32px] overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 sm:border-4 border-black w-full max-w-[500px] mx-auto p-4 sm:p-8 min-h-[600px] flex flex-col"
+        )}
       >
         <div className="flex-1 flex flex-col items-center justify-center space-y-6 sm:space-y-8">
           <div className="w-32 h-32 sm:w-40 sm:h-40">
-            {animation && (
+            {typeof window !== 'undefined' && animation && (
               <Lottie
                 animationData={animation}
                 loop={true}
@@ -228,30 +285,24 @@ export function PetitionForm() {
 
         <div className="flex flex-col items-center gap-6 sm:gap-9">
           <div className="flex items-center justify-center gap-4">
-            <a
-              href={socialLinks.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => handleSocialShare('twitter')}
               className="p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors"
             >
               <Twitter className="w-5 h-5 sm:w-6 sm:h-6" />
-            </a>
-            <a
-              href={socialLinks.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
+            </button>
+            <button
+              onClick={() => handleSocialShare('facebook')}
               className="p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors"
             >
               <Facebook className="w-5 h-5 sm:w-6 sm:h-6" />
-            </a>
-            <a
-              href={socialLinks.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
+            </button>
+            <button
+              onClick={() => handleSocialShare('instagram')}
               className="p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors"
             >
               <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
-            </a>
+            </button>
           </div>
 
           <div className="flex flex-col gap-3 sm:gap-4 w-full">
@@ -264,15 +315,6 @@ export function PetitionForm() {
               <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
               Share Now
             </Button>
-
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => router.push('/')}
-              className="flex items-center justify-center gap-2 min-w-[200px] text-black text-sm sm:text-base"
-            >
-              Back to Home
-            </Button>
           </div>
         </div>
       </motion.div>
@@ -284,7 +326,9 @@ export function PetitionForm() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-[500px] mx-auto bg-[#F8EFE2] p-4 sm:p-8 rounded-lg min-h-[600px]"
+      className={cn(
+        "relative bg-[#F8EFE2] rounded-[20px] sm:rounded-[32px] overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 sm:border-4 border-black w-full max-w-[500px] mx-auto p-4 sm:p-8 min-h-[600px]"
+      )}
     >
       <div className="mb-6 sm:mb-8">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-['Oswald'] font-bold text-black uppercase mb-3 sm:mb-4">

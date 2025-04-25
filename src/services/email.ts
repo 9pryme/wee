@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('Missing RESEND_API_KEY environment variable')
+if (!process.env.RESEND_DEMAND_API_KEY || !process.env.RESEND_CONFIRMATION_API_KEY) {
+  throw new Error('Missing required RESEND API keys')
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Create two Resend instances
+const resendDemand = new Resend(process.env.RESEND_DEMAND_API_KEY)
+const resendConfirmation = new Resend(process.env.RESEND_CONFIRMATION_API_KEY)
 
 // Create Supabase client
 const supabase = createClient(
@@ -50,8 +52,8 @@ function generateUnsubscribeLink(email: string): string {
   return `${process.env.NEXT_PUBLIC_BASE_URL}/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`
 }
 
-// Update the sendEmail function to check for unsubscribed users
-async function sendEmail({ to, subject, html, replyTo, includeUnsubscribe = false }: EmailOptions): Promise<EmailResponse> {
+// Update the sendEmail function to accept which service to use
+async function sendEmail({ to, subject, html, replyTo, includeUnsubscribe = false, isDemand = false }: EmailOptions & { isDemand?: boolean }): Promise<EmailResponse> {
   try {
     console.log('Sending email:', {
       to,
@@ -83,7 +85,7 @@ async function sendEmail({ to, subject, html, replyTo, includeUnsubscribe = fals
       `
     }
 
-    const result = await resend.emails.send({
+    const result = await (isDemand ? resendDemand : resendConfirmation).emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'WeeWantMore <noreply@weewantmore.ng>',
       to,
       subject,
@@ -134,14 +136,15 @@ async function getOrganizationEmails(organizationId: string): Promise<string[]> 
   return [data.email]
 }
 
-// Main function to send petition email to organization
+// Update the petition email function to use demand key
 async function sendPetitionEmailToOrganization(data: PetitionEmailData): Promise<EmailResponse> {
   return sendEmail({
     to: data.organizationEmail,
     subject: `Dear ${data.organizationName}, Fund Nigerian Women's Economic Ambitions`,
     html: generatePetitionEmailTemplate(data),
     replyTo: data.petitionerEmail,
-    includeUnsubscribe: false
+    includeUnsubscribe: false,
+    isDemand: true // Use demand key
   })
 }
 
@@ -217,13 +220,14 @@ function generatePetitionEmailTemplate(data: PetitionEmailData): string {
   `
 }
 
-// Send confirmation email to petitioner
+// Confirmation email continues to use confirmation key (default)
 async function sendConfirmationEmail(data: PetitionEmailData): Promise<EmailResponse> {
   return sendEmail({
     to: data.petitionerEmail,
     subject: 'Thank you for your petition',
     html: generateConfirmationEmailTemplate(data),
-    includeUnsubscribe: true
+    includeUnsubscribe: true,
+    isDemand: false // Use confirmation key
   })
 }
 
@@ -340,6 +344,7 @@ export {
   sendConfirmationEmail,
   generatePetitionEmailTemplate,
   generateBankEmailTemplate,
+  generateConfirmationEmailTemplate,
   type EmailResponse,
   type EmailParams,
   type PetitionEmailData

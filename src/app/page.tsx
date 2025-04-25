@@ -1,5 +1,4 @@
 'use client'
-import { Header } from '@/components/layout/Header/Header'
 import { Hero3 } from '@/components/sections/Hero/Hero3'
 import { Stories } from '@/components/sections/Stories/Stories'
 import { Stories2 } from '@/components/sections/Stories/Stories2'
@@ -21,7 +20,6 @@ export default function Home() {
         }}
         className="bg-[#2ECEB0]"
       >
-        <Header />
         <main className="min-h-screen">
           <div id="hero3-section">
             <Hero3 />
