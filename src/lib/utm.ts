@@ -40,6 +40,7 @@ export async function trackClick(trackingId: string) {
   }
 
   try {
+    // First try to find the UTM link by tracking ID
     const response = await fetch('/api/track/click', {
       method: 'POST',
       headers: {
@@ -86,5 +87,18 @@ export function getTrackingIdFromUrl(): string | null {
   if (typeof window === 'undefined') return null
   
   const url = new URL(window.location.href)
-  return url.searchParams.get('ref')
+  const ref = url.searchParams.get('ref')
+  const utmSource = url.searchParams.get('utm_source')
+  const utmMedium = url.searchParams.get('utm_medium')
+  const utmCampaign = url.searchParams.get('utm_campaign')
+
+  // If we have a ref, use that
+  if (ref) return ref
+
+  // If we have UTM parameters, create a tracking ID
+  if (utmSource && utmMedium && utmCampaign) {
+    return `${utmSource}-${utmMedium}-${utmCampaign}`
+  }
+
+  return null
 } 

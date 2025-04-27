@@ -4,8 +4,7 @@ import { motion } from 'framer-motion'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 import Image from 'next/image'
 import { useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { trackClick } from '@/lib/utm'
+import { trackClick, getTrackingIdFromUrl } from '@/lib/utm'
 import { Suspense } from 'react'
 
 // Dynamically import PetitionForm with no SSR
@@ -15,8 +14,7 @@ const PetitionForm = dynamic(
 )
 
 function PetitionContent() {
-  const searchParams = useSearchParams()
-  const trackingId = searchParams?.get('ref')
+  const trackingId = getTrackingIdFromUrl()
 
   useEffect(() => {
     const trackPageLoad = async () => {
