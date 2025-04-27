@@ -34,6 +34,11 @@ export function generateUTMUrl(baseUrl: string, params: {
 }
 
 export async function trackClick(trackingId: string) {
+  if (!trackingId) {
+    console.warn('No tracking ID provided')
+    return null
+  }
+
   try {
     const response = await fetch('/api/track/click', {
       method: 'POST',
@@ -44,13 +49,15 @@ export async function trackClick(trackingId: string) {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to track click')
+      const error = await response.json()
+      console.error('Failed to track click:', error)
+      return null
     }
 
     return await response.json()
   } catch (error) {
     console.error('Error tracking click:', error)
-    throw error
+    return null
   }
 }
 

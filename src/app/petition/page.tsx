@@ -25,6 +25,7 @@ function PetitionContent() {
       try {
         await trackClick(trackingId)
       } catch (error) {
+        // Silently fail - we don't want to show errors to users for tracking
         console.error('Error tracking click:', error)
       }
     }
