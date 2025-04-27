@@ -1,0 +1,83 @@
+export async function trackUTM(url: string, type: 'click' | 'conversion') {
+  try {
+    const response = await fetch('/api/track', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url, type }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to track UTM')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error tracking UTM:', error)
+    throw error
+  }
+}
+
+export function generateUTMUrl(baseUrl: string, params: {
+  source: string
+  medium: string
+  campaign: string
+  volunteerName: string
+}) {
+  const url = new URL(baseUrl)
+  url.searchParams.append('utm_source', params.source)
+  url.searchParams.append('utm_medium', params.medium)
+  url.searchParams.append('utm_campaign', params.campaign)
+  url.searchParams.append('volunteer', params.volunteerName)
+  return url.toString()
+}
+
+export async function trackClick(trackingId: string) {
+  try {
+    const response = await fetch('/api/track/click', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ trackingId }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to track click')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error tracking click:', error)
+    throw error
+  }
+}
+
+export async function trackConversion(trackingId: string) {
+  try {
+    const response = await fetch('/api/track/conversion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ trackingId }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to track conversion')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error tracking conversion:', error)
+    throw error
+  }
+}
+
+export function getTrackingIdFromUrl(): string | null {
+  if (typeof window === 'undefined') return null
+  
+  const url = new URL(window.location.href)
+  return url.searchParams.get('ref')
+} 

@@ -19,11 +19,16 @@ import {
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { trackEvent, EventCategory, EventAction } from '@/lib/analytics'
+import { trackConversion } from '@/lib/utm'
 
 // Import Lottie dynamically with SSR disabled
 const Lottie = dynamic(() => import('lottie-react'), {
   ssr: false
 })
+
+interface PetitionFormProps {
+  trackingId?: string | null
+}
 
 function getOrdinalSuffix(n: number): string {
   const j = n % 10
@@ -44,7 +49,7 @@ function getOrdinalSuffix(n: number): string {
   return n + "th"
 }
 
-export function PetitionForm() {
+export function PetitionForm({ trackingId }: PetitionFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -94,34 +99,21 @@ export function PetitionForm() {
     }]
   }, [organizations])
 
-  async function loadData() {
-    setIsLoading(true)
+  const loadData = async () => {
     try {
+      // Load organizations
       const orgs = await getOrganizations()
-      console.log('Loaded organizations:', orgs)
-      
-      if (!orgs || orgs.length === 0) {
-        toast.error('No organizations found. Please try again later.')
-        return
-      }
-      
       setOrganizations(orgs)
 
-      const { count, error } = await supabase
+      // Get current petition count
+      const { count } = await supabase
         .from('petition_submissions')
         .select('*', { count: 'exact' })
       
-      if (error) {
-        console.error('Error fetching petition count:', error)
-        throw error
-      }
-      
       setPetitionCount(count || 0)
-    } catch (err) {
-      console.error('Error loading data:', err)
-      toast.error('Failed to load organizations. Please refresh the page.')
-    } finally {
-      setIsLoading(false)
+    } catch (error) {
+      console.error('Error loading data:', error)
+      toast.error('Failed to load data. Please refresh the page.')
     }
   }
 
@@ -177,6 +169,19 @@ export function PetitionForm() {
           label: selectedOrg?.organization_name,
           value: submittedNumber ?? undefined
         })
+
+        // Track UTM conversion if tracking ID exists
+        if (trackingId) {
+          console.log('Tracking conversion for tracking ID:', trackingId)
+          try {
+            await trackConversion(trackingId)
+            console.log('Conversion tracked successfully')
+          } catch (error) {
+            console.error('Error tracking conversion:', error)
+          }
+        } else {
+          console.log('No tracking ID found for conversion tracking')
+        }
 
         // Show success toast
         toast.success('Petition submitted successfully!')

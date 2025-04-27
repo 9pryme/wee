@@ -1,51 +1,84 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { logger } from '@/utils/logger'
 
-export async function middleware(req: NextRequest) {
-  const adminSessionCookie = req.cookies.get('adminSession')?.value
-  let adminSession = null
-
+export async function middleware(request: NextRequest) {
   try {
-    if (adminSessionCookie) {
-      adminSession = JSON.parse(adminSessionCookie)
-    }
-  } catch (e) {
-    logger.error('Error parsing admin session:', e)
-  }
+    const res = NextResponse.next()
+    const supabase = createMiddlewareClient({ req: request, res })
 
-  logger.info('Middleware:', {
-    path: req.nextUrl.pathname,
-    hasSession: !!adminSession
-  })
-
-  // Check auth condition
-  if (req.nextUrl.pathname.startsWith('/admin')) {
-    // If accessing just /admin, redirect to dashboard
-    if (req.nextUrl.pathname === '/admin') {
-      if (!adminSession) {
-        return NextResponse.redirect(new URL('/admin/login', req.url))
+    // Handle admin routes
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+      // If accessing just /admin, redirect to login
+      if (request.nextUrl.pathname === '/admin') {
+        return NextResponse.redirect(new URL('/admin/login', request.url))
       }
-      return NextResponse.redirect(new URL('/admin/dashboard', req.url))
-    }
 
-    // For login page
-    if (req.nextUrl.pathname === '/admin/login') {
-      if (adminSession) {
-        return NextResponse.redirect(new URL('/admin/dashboard', req.url))
+      // Allow access to login page
+      if (request.nextUrl.pathname === '/admin/login') {
+        return res
       }
-      return NextResponse.next()
+
+      // Check admin session for all other admin routes
+      const adminSession = request.cookies.get('adminSession')?.value
+      let session = null
+
+      try {
+        if (adminSession) {
+          session = JSON.parse(adminSession)
+        }
+      } catch (e) {
+        console.error('Error parsing admin session:', e)
+      }
+
+      if (!session) {
+        return NextResponse.redirect(new URL('/admin/login', request.url))
+      }
     }
 
-    // For all other admin routes
-    if (!adminSession) {
-      return NextResponse.redirect(new URL('/admin/login', req.url))
+    // Handle UTM tracking
+    if (request.nextUrl.pathname === '/api/track/click') {
+      const trackingId = request.nextUrl.searchParams.get('ref')
+      
+      if (!trackingId) {
+        return NextResponse.json({ error: 'No tracking ID provided' }, { status: 400 })
+      }
+
+      // Get the UTM link data
+      const { data: linkData, error: fetchError } = await supabase
+        .from('utm_links')
+        .select('id, click_count, full_url')
+        .eq('tracking_id', trackingId)
+        .single()
+
+      if (fetchError || !linkData) {
+        return NextResponse.json({ error: 'Invalid tracking ID' }, { status: 404 })
+      }
+
+      // Increment the click count
+      const { error: updateError } = await supabase
+        .from('utm_links')
+        .update({ click_count: (linkData.click_count || 0) + 1 })
+        .eq('id', linkData.id)
+
+      if (updateError) {
+        return NextResponse.json({ error: 'Failed to track click' }, { status: 500 })
+      }
+
+      // Redirect to the petition page
+      return NextResponse.redirect(new URL(linkData.full_url))
     }
+
+    return res
+  } catch (error) {
+    console.error('Middleware error:', error)
+    return NextResponse.redirect(new URL('/admin/login', request.url))
   }
-
-  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: [
+    '/admin/:path*',
+    '/api/track/:path*'
+  ],
 } 

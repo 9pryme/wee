@@ -3,6 +3,10 @@ import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 import Image from 'next/image'
+import { useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { trackClick } from '@/lib/utm'
+import { Suspense } from 'react'
 
 // Dynamically import PetitionForm with no SSR
 const PetitionForm = dynamic(
@@ -10,7 +14,24 @@ const PetitionForm = dynamic(
   { ssr: false }
 )
 
-export default function PetitionPage() {
+function PetitionContent() {
+  const searchParams = useSearchParams()
+  const trackingId = searchParams?.get('ref')
+
+  useEffect(() => {
+    const trackPageLoad = async () => {
+      if (!trackingId) return
+
+      try {
+        await trackClick(trackingId)
+      } catch (error) {
+        console.error('Error tracking click:', error)
+      }
+    }
+
+    trackPageLoad()
+  }, [trackingId])
+
   const demands = [
     "Create or expand dedicated women's business credit fund with friendly-interest rates",
     "Reserve 40% of your MSME loan portfolio to women and simplify collateral requirements", 
@@ -51,68 +72,54 @@ export default function PetitionPage() {
             </motion.div>
 
             {/* Demands List - Mobile */}
-            <motion.div 
-              className="lg:hidden bg-white/5 backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 border border-white/10 mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.8,
-                delay: 0.2
-              }}
-            >
-              <ul className="list-disc list-inside text-white space-y-4 text-left">
-                {demands.map((demand, index) => (
-                  <motion.li
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.4 + (index * 0.1)
-                    }}
-                    className="text-sm md:text-base"
-                  >
+            <div className="lg:hidden space-y-4 mb-8">
+              {demands.map((demand, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4"
+                >
+                  <p className="text-white text-sm sm:text-base">
                     {demand}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
+                  </p>
+                </motion.div>
+              ))}
+            </div>
 
             {/* Demands List - Desktop */}
-            <motion.div 
-              className="hidden lg:block bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.8,
-                delay: 0.2
-              }}
-            >
-              <ul className="list-disc list-inside text-white space-y-6 text-left">
-                {demands.map((demand, index) => (
-                  <motion.li
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.4 + (index * 0.1)
-                    }}
-                    className="text-lg"
-                  >
+            <div className="hidden lg:block space-y-4">
+              {demands.map((demand, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-lg p-4"
+                >
+                  <p className="text-white text-sm sm:text-base">
                     {demand}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* Right Form */}
           <div className="w-full lg:w-[500px] flex-shrink-0">
-            <PetitionForm />
+            <PetitionForm trackingId={trackingId} />
           </div>
         </div>
       </div>
     </main>
+  )
+}
+
+export default function PetitionPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PetitionContent />
+    </Suspense>
   )
 }

@@ -50,6 +50,12 @@ export function Actions({ onUpdateEmail }: ActionsProps) {
       description: 'Update a bank email in the system',
       color: 'bg-pink-600',
       onClick: onUpdateEmail
+    },
+    {
+      title: 'Generate Links',
+      description: 'Track, manage and add links',
+      color: 'bg-blue-600',
+      onClick: () => router.push('/admin/utm')
     }
   ]
 
