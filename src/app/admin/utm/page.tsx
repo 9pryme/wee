@@ -5,9 +5,10 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { AdminButton } from '@/components/admin/AdminButton'
 import { UTMTable } from '@/components/admin/UTMTable'
 import { UTMForm } from '@/components/admin/UTMForm'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, ChevronLeft } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import type { UTMLink } from '@/types'
+import { useRouter } from 'next/navigation'
 import {
   LineChart,
   Line,
@@ -27,6 +28,7 @@ interface Analytics {
 }
 
 export default function UTMPage() {
+  const router = useRouter()
   const supabase = createClientComponentClient()
   const [links, setLinks] = useState<UTMLink[]>([])
   const [analytics, setAnalytics] = useState<Analytics>({
@@ -162,6 +164,14 @@ export default function UTMPage() {
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={() => router.push('/admin/dashboard')}
+        className="inline-flex items-center px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+      >
+        <ChevronLeft className="h-4 w-4 mr-1" />
+        Back to Dashboard
+      </button>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">UTM Links</h1>

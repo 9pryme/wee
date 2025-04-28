@@ -1,20 +1,27 @@
+// Add debug mode check
+const isDev = process.env.NODE_ENV === 'development'
+
 // Log the pageview with their URL
 export const pageview = (url: string) => {
   if (typeof window.gtag === 'function') {
     try {
       window.gtag('config', process.env.NEXT_PUBLIC_GA_ID!, {
         page_path: url,
-        debug_mode: true
+        debug_mode: isDev
       })
       
-      console.log('📄 GA Pageview sent:', {
-        url,
-        measurementId: process.env.NEXT_PUBLIC_GA_ID
-      })
+      if (isDev) {
+        console.log('📄 GA Pageview sent:', {
+          url,
+          measurementId: process.env.NEXT_PUBLIC_GA_ID
+        })
+      }
     } catch (error) {
-      console.error('❌ Failed to send GA pageview:', error)
+      if (isDev) {
+        console.error('❌ Failed to send GA pageview:', error)
+      }
     }
-  } else {
+  } else if (isDev) {
     console.warn('⚠️ gtag not available')
   }
 }
@@ -66,23 +73,27 @@ export const trackEvent = ({
         event_label: label,
         value: value,
         // Additional parameters for debugging
-        debug_mode: true,
+        debug_mode: isDev,
         send_to: process.env.NEXT_PUBLIC_GA_ID
       })
       
-      console.log('🔍 GA4 Event sent:', {
-        event_name: eventName,
-        params: {
-          event_category: category,
-          event_label: label,
-          value: value
-        },
-        measurementId: process.env.NEXT_PUBLIC_GA_ID
-      })
+      if (isDev) {
+        console.log('🔍 GA4 Event sent:', {
+          event_name: eventName,
+          params: {
+            event_category: category,
+            event_label: label,
+            value: value
+          },
+          measurementId: process.env.NEXT_PUBLIC_GA_ID
+        })
+      }
     } catch (error) {
-      console.error('❌ Failed to send GA event:', error)
+      if (isDev) {
+        console.error('❌ Failed to send GA event:', error)
+      }
     }
-  } else {
+  } else if (isDev) {
     console.warn('⚠️ gtag not available')
   }
 }
@@ -133,7 +144,7 @@ export const monitorPerformance = () => {
         trackEvent({
           action: EventAction.LONG_TASK,
           category: EventCategory.PERFORMANCE,
-          label: 'Long task detected',
+          label: isDev ? 'Long task detected' : undefined,
           value: Math.round(entry.duration)
         })
       }
@@ -156,7 +167,7 @@ export const monitorPerformance = () => {
         trackEvent({
           action: EventAction.PAGE_FROZEN,
           category: EventCategory.PERFORMANCE,
-          label: 'Page freeze detected',
+          label: isDev ? 'Page freeze detected' : undefined,
           value: Math.round(inactiveDuration)
         })
       }

@@ -36,6 +36,12 @@ export function generateUTMUrl(baseUrl: string, params: {
 export async function trackClick(trackingId: string) {
   if (!trackingId) return null
 
+  // Check if this click has already been counted in this session
+  const sessionKey = `click_tracked_${trackingId}`
+  if (typeof window !== 'undefined' && sessionStorage.getItem(sessionKey)) {
+    return null // Already tracked in this session
+  }
+
   try {
     const response = await fetch(`/api/track/click?ref=${trackingId}`, {
       method: 'GET'
@@ -44,6 +50,11 @@ export async function trackClick(trackingId: string) {
     if (!response.ok) {
       console.error('Failed to track click')
       return null
+    }
+
+    // Mark this click as tracked in the current session
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(sessionKey, 'true')
     }
 
     return await response.json()
