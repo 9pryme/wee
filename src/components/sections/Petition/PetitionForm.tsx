@@ -19,7 +19,7 @@ import {
 import { toast } from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { trackEvent, EventCategory, EventAction } from '@/lib/analytics'
-import { trackConversion } from '@/lib/utm'
+import { trackConversion, getTrackingIdFromUrl } from '@/lib/utm'
 
 // Import Lottie dynamically with SSR disabled
 const Lottie = dynamic(() => import('lottie-react'), {
@@ -171,10 +171,11 @@ export function PetitionForm({ trackingId }: PetitionFormProps) {
         })
 
         // Track UTM conversion if tracking ID exists
-        if (trackingId) {
-          console.log('Tracking conversion for tracking ID:', trackingId)
+        const conversionTrackingId = trackingId || getTrackingIdFromUrl()
+        if (conversionTrackingId) {
+          console.log('Tracking conversion for tracking ID:', conversionTrackingId)
           try {
-            await trackConversion(trackingId)
+            await trackConversion(conversionTrackingId)
             console.log('Conversion tracked successfully')
           } catch (error) {
             console.error('Error tracking conversion:', error)

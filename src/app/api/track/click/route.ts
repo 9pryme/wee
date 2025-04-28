@@ -7,54 +7,39 @@ export const revalidate = 0
 
 export async function GET(request: Request) {
   try {
-    console.log('Click tracking endpoint hit')
-    
     const url = new URL(request.url)
-    const trackingId = url.searchParams.get('ref')
+    const ref = url.searchParams.get('ref')
     
-    console.log('Click tracking request received:', {
-      url: request.url,
-      trackingId
-    })
-
-    if (!trackingId) {
-      console.error('No tracking ID provided')
-      return NextResponse.json({ error: 'No tracking ID provided' }, { status: 400 })
+    if (!ref) {
+      return NextResponse.json({ error: 'No ref parameter provided' }, { status: 400 })
     }
 
     const supabase = createRouteHandlerClient({ cookies })
 
-    // Get the UTM link data
-    const { data: linkData, error: fetchError } = await supabase
+    // Find the UTM link by tracking ID
+    const { data: link, error: findError } = await supabase
       .from('utm_links')
-      .select('id, click_count, full_url')
-      .eq('tracking_id', trackingId)
+      .select('*')
+      .eq('tracking_id', ref)
       .single()
 
-    console.log('Fetched link data:', { linkData, fetchError })
-
-    if (fetchError || !linkData) {
-      console.error('Error fetching UTM link:', fetchError)
-      return NextResponse.json({ error: 'Invalid tracking ID' }, { status: 404 })
+    if (findError || !link) {
+      return NextResponse.json({ error: 'Link not found' }, { status: 404 })
     }
 
-    // Increment the click count
+    // Update click count
     const { error: updateError } = await supabase
       .from('utm_links')
-      .update({ click_count: (linkData.click_count || 0) + 1 })
-      .eq('id', linkData.id)
-
-    console.log('Update result:', { updateError, newCount: (linkData.click_count || 0) + 1 })
+      .update({ click_count: (link.click_count || 0) + 1 })
+      .eq('id', link.id)
 
     if (updateError) {
-      console.error('Error incrementing click count:', updateError)
-      return NextResponse.json({ error: 'Failed to track click' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update click count' }, { status: 500 })
     }
 
-    // Redirect to the petition page
-    return NextResponse.redirect(new URL(linkData.full_url))
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Unexpected error in click tracking:', error)
+    console.error('Error tracking click:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

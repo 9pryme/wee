@@ -34,24 +34,15 @@ export function generateUTMUrl(baseUrl: string, params: {
 }
 
 export async function trackClick(trackingId: string) {
-  if (!trackingId) {
-    console.warn('No tracking ID provided')
-    return null
-  }
+  if (!trackingId) return null
 
   try {
-    // First try to find the UTM link by tracking ID
-    const response = await fetch('/api/track/click', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ trackingId }),
+    const response = await fetch(`/api/track/click?ref=${trackingId}`, {
+      method: 'GET'
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      console.error('Failed to track click:', error)
+      console.error('Failed to track click')
       return null
     }
 
@@ -63,42 +54,26 @@ export async function trackClick(trackingId: string) {
 }
 
 export async function trackConversion(trackingId: string) {
+  if (!trackingId) return null
+
   try {
-    const response = await fetch('/api/track/conversion', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ trackingId }),
+    const response = await fetch(`/api/track/conversion?ref=${trackingId}`, {
+      method: 'GET'
     })
 
     if (!response.ok) {
-      throw new Error('Failed to track conversion')
+      console.error('Failed to track conversion')
+      return null
     }
 
     return await response.json()
   } catch (error) {
     console.error('Error tracking conversion:', error)
-    throw error
+    return null
   }
 }
 
 export function getTrackingIdFromUrl(): string | null {
   if (typeof window === 'undefined') return null
-  
-  const url = new URL(window.location.href)
-  const ref = url.searchParams.get('ref')
-  const utmSource = url.searchParams.get('utm_source')
-  const utmMedium = url.searchParams.get('utm_medium')
-  const utmCampaign = url.searchParams.get('utm_campaign')
-
-  // If we have a ref, use that
-  if (ref) return ref
-
-  // If we have UTM parameters, create a tracking ID
-  if (utmSource && utmMedium && utmCampaign) {
-    return `${utmSource}-${utmMedium}-${utmCampaign}`
-  }
-
-  return null
+  return new URL(window.location.href).searchParams.get('ref')
 } 
