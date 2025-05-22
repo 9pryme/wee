@@ -16,6 +16,21 @@ export function Hero3() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const hasTrackedMidpoint = useRef<boolean>(false)
 
+  // Add autoplay when video is ready
+  useEffect(() => {
+    const video = videoRef.current
+    if (video) {
+      video.addEventListener('loadeddata', () => {
+        // Video is loaded and ready to play
+        video.play().catch(err => {
+          console.log("Auto-play failed:", err)
+          // Reset playing state if autoplay fails
+          setIsPlaying(false)
+        })
+      })
+    }
+  }, [])
+
   const texts = [
     {
       text: ["WE DRIVE 50% OF NIGERIA'S ECONOMY. BUT BANKS GIVE US LESS THAN 10% OF SME LOANS."],
@@ -41,7 +56,7 @@ export function Hero3() {
       if (isPlaying) {
         video.pause()
       } else {
-        video.play()
+        video.play().catch(err => console.log("Play failed:", err))
       }
       setIsPlaying(!isPlaying)
     }
@@ -86,6 +101,7 @@ export function Hero3() {
 
     switch(event) {
       case 'play':
+        setIsPlaying(true)
         trackEvent({
           action: EventAction.VIDEO_PLAYED,
           category: EventCategory.VIDEO,
@@ -93,6 +109,7 @@ export function Hero3() {
         })
         break
       case 'pause':
+        setIsPlaying(false)
         trackEvent({
           action: EventAction.VIDEO_PAUSED,
           category: EventCategory.VIDEO,
@@ -100,6 +117,7 @@ export function Hero3() {
         })
         break
       case 'ended':
+        setIsPlaying(false)
         trackEvent({
           action: EventAction.VIDEO_COMPLETED,
           category: EventCategory.VIDEO,
@@ -138,7 +156,7 @@ export function Hero3() {
       if (video) {
         video.muted = false
         setIsMuted(false)
-        video.play()
+        video.play().catch(err => console.log("Mobile play failed:", err))
         setIsPlaying(true)
       }
     }, 100)
@@ -204,8 +222,8 @@ export function Hero3() {
               ref={videoRef}
               className="w-full h-full object-cover"
               playsInline
-              poster="https://res.cloudinary.com/delpitwkb/image/upload/v1745336920/thumbnail_eirfdn.jpg"
-              src="https://res.cloudinary.com/delpitwkb/video/upload/v1745336998/sample_5_tfglxf.mp4"
+              controls={false}
+              src="/videos/hero/vid.mp4"
               onPlay={() => handleVideoEvent('play')}
               onPause={() => handleVideoEvent('pause')}
               onEnded={() => handleVideoEvent('ended')}
@@ -264,12 +282,13 @@ export function Hero3() {
         {/* Video Section */}
         <div className="video-container w-full h-1/2 relative z-10 border-b-4 border-black">
           <video 
+            ref={videoRef}
             className="w-full h-full object-cover"
             loop 
             muted={isMuted}
             playsInline
-            poster="https://res.cloudinary.com/delpitwkb/image/upload/v1745336920/thumbnail_eirfdn.jpg"
-            src="https://res.cloudinary.com/delpitwkb/video/upload/v1745336998/sample_5_tfglxf.mp4"
+            controls={false}
+            src="/videos/hero/vid.mp4"
             onPlay={() => handleVideoEvent('play')}
             onPause={() => handleVideoEvent('pause')}
             onEnded={() => handleVideoEvent('ended')}

@@ -10,11 +10,11 @@ export function Stories() {
   const [overlayVideo, setOverlayVideo] = useState<string | null>(null)
 
   const videos = [
-    { id: 1, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630877/xgcwcpgpmqitpegvpujk.mp4", thumbnail: "/thumbnails/13.png" },
-    { id: 2, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630868/s2ujgiox4bheaz68d2cn.mp4", thumbnail: "/thumbnails/7.png" },
-    { id: 3, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630867/svtfpy6gc0ra1mtgelxa.mp4", thumbnail: "/thumbnails/10.png" },
-    { id: 4, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630852/mywzouiypacw0dgnacch.mp4", thumbnail: "/thumbnails/3.png" },
-    { id: 5, video: "https://res.cloudinary.com/delpitwkb/video/upload/v1744630842/e0el5pkjd4zsgzpkpznx.mp4", thumbnail: "/thumbnails/12.png" }
+    { id: 1, video: "/videos/new/Tosin.mp4", thumbnail: "/thumbnails/13.png" },
+    { id: 2, video: "/videos/new/Habibah.mp4", thumbnail: "/thumbnails/7.png" },
+    { id: 3, video: "/videos/new/moji.mp4", thumbnail: "/thumbnails/10.png" },
+    { id: 4, video: "/videos/new/dunni.mp4", thumbnail: "/thumbnails/3.png" },
+    { id: 5, video: "/videos/new/fali.mp4", thumbnail: "/thumbnails/12.png" }
   ]
 
   const scroll = (direction: 'left' | 'right') => {
