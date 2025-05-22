@@ -33,7 +33,7 @@ export function Stories2() {
       quote: "I need funding to expand my business and produce at scale",
       bgColor: "bg-[#B4E9FF]",
       image: "/images/testimonials/nanaah.jpg",
-      video: "https://drive.google.com/file/d/1X1lgBIIybgCM0ylA7ey2ZI45KoyFfWW-/view?usp=drive_link"
+      video: "https://drive.google.com/file/d/1wr3P3KkwVNYPdopoF7Y45u2f3YYT0L-9/view?usp=drive_link"
     },
     {
       name: "Miracle Ademu Eteh",
@@ -41,7 +41,7 @@ export function Stories2() {
       quote: "I need capital to open a physical fashion store",
       bgColor: "bg-[#98E9D0]",
       image: "/images/testimonials/miracle.jpg",
-      video: "https://drive.google.com/file/d/1KTpeHaEOkB0KwZ1dZLJ2eyGsNz_LJloK/view?usp=drive_link"
+      video: "https://drive.google.com/file/d/1jAijbDTvlWT8ZjqA3_vFcDQ7VfiOBhLe/view?usp=drive_link"
     },
     {
       name: "Wasinta Buba",
@@ -49,7 +49,7 @@ export function Stories2() {
       quote: "I need funding to expand my fashion business and open more branches",
       bgColor: "bg-[#F8A3BE]",
       image: "/images/testimonials/wasinta.jpg",
-      video: "https://drive.google.com/file/d/1i6l-E5KZhsyp1vaf2pRVXDGBM0Y5uhUo/view?usp=drive_link"
+      video: "https://drive.google.com/file/d/1QVuQ_8hkF5MZ6ggBlVamibHVmz4Vm7iy/view?usp=drive_link"
     },
     {
       name: "Ife",
@@ -57,7 +57,7 @@ export function Stories2() {
       quote: "I need capital to open a salon",
       bgColor: "bg-[#B4E9FF]",
       image: "/images/testimonials/ife.jpg",
-      video: "https://drive.google.com/drive/folders/1uoofX6kbhAB01Z7otGmwC62qdxdAhPPd"
+      video: "https://drive.google.com/file/d/1eBpXeZCz7eB3tRgy9k-IAi9jokR9whre/view?usp=drive_link"
     },
     {
       name: "Chef OB",
@@ -65,7 +65,7 @@ export function Stories2() {
       quote: "I need funding to start my culinary school",
       bgColor: "bg-[#98E9D0]",
       image: "/images/testimonials/chefob.jpg",
-      video: "https://drive.google.com/file/d/1ERadfAEXX5K-mrFot_TeT3xxpo5kymmP/view?usp=drive_link"
+      video: "https://drive.google.com/file/d/1SmUzDekhZN_-feKPOGVcCU_gGzU7j5GQ/view?usp=drive_link"
     }
   ]
 
@@ -73,7 +73,7 @@ export function Stories2() {
     <section className="min-h-[40vh] md:min-h-[80vh] relative py-12 md:py-20 bg-[#ED323D]">
       {selectedVideo && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl aspect-video">
+          <div className="relative w-full max-w-[400px] aspect-[9/16]">
             <button 
               onClick={() => setSelectedVideo(null)}
               className="absolute -top-12 right-0 text-white hover:text-gray-300"
