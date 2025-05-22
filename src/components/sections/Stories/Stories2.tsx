@@ -4,9 +4,54 @@ import { TestimonialCard } from '@/components/common/Card/TestimonialCard'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 
+// Move testimonials outside the component to avoid recreation on each render
+const testimonials = [
+  {
+    name: "Nanaah",
+    role: "Event Caterer, small chops vendor",
+    quote: "I need funding to expand my business and produce at scale",
+    bgColor: "bg-[#B4E9FF]",
+    image: "/images/testimonials/nanaah.jpg",
+    video: "https://drive.google.com/file/d/1wr3P3KkwVNYPdopoF7Y45u2f3YYT0L-9/view?usp=drive_link"
+  },
+  {
+    name: "Miracle Ademu Eteh",
+    role: "Fashion entrepreneur",
+    quote: "I need capital to open a physical fashion store",
+    bgColor: "bg-[#98E9D0]",
+    image: "/images/testimonials/miracle.jpg",
+    video: "https://drive.google.com/file/d/1jAijbDTvlWT8ZjqA3_vFcDQ7VfiOBhLe/view?usp=drive_link"
+  },
+  {
+    name: "Wasinta Buba",
+    role: "Fashion Designer", 
+    quote: "I need funding to expand my fashion business and open more branches",
+    bgColor: "bg-[#F8A3BE]",
+    image: "/images/testimonials/wasinta.jpg",
+    video: "https://drive.google.com/file/d/1QVuQ_8hkF5MZ6ggBlVamibHVmz4Vm7iy/view?usp=drive_link"
+  },
+  {
+    name: "Ife",
+    role: "Hairstylist",
+    quote: "I need capital to open a salon",
+    bgColor: "bg-[#B4E9FF]",
+    image: "/images/testimonials/ife.jpg",
+    video: "https://drive.google.com/file/d/1eBpXeZCz7eB3tRgy9k-IAi9jokR9whre/view?usp=drive_link"
+  },
+  {
+    name: "Chef OB",
+    role: "Chef",
+    quote: "I need funding to start my culinary school",
+    bgColor: "bg-[#98E9D0]",
+    image: "/images/testimonials/chefob.jpg",
+    video: "https://drive.google.com/file/d/1SmUzDekhZN_-feKPOGVcCU_gGzU7j5GQ/view?usp=drive_link"
+  }
+]
+
 export function Stories2() {
   const [isMobile, setIsMobile] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
+  const [preloadedVideos, setPreloadedVideos] = useState<{[key: string]: string}>({})
 
   useEffect(() => {
     const checkMobile = () => {
@@ -18,6 +63,22 @@ export function Stories2() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
+  // Preload videos when component mounts
+  useEffect(() => {
+    const preloadVideos = async () => {
+      const videoUrls: {[key: string]: string} = {}
+      
+      for (const testimonial of testimonials) {
+        const embedUrl = getGoogleDriveEmbedUrl(testimonial.video)
+        videoUrls[testimonial.video] = embedUrl
+      }
+
+      setPreloadedVideos(videoUrls)
+    }
+
+    preloadVideos()
+  }, []) // No need to add testimonials as dependency since it's now defined outside the component
+
   const getGoogleDriveEmbedUrl = (url: string) => {
     const fileId = url.match(/[-\w]{25,}/)
     if (fileId) {
@@ -26,51 +87,15 @@ export function Stories2() {
     return url
   }
 
-  const testimonials = [
-    {
-      name: "Nanaah",
-      role: "Event Caterer, small chops vendor",
-      quote: "I need funding to expand my business and produce at scale",
-      bgColor: "bg-[#B4E9FF]",
-      image: "/images/testimonials/nanaah.jpg",
-      video: "https://drive.google.com/file/d/1wr3P3KkwVNYPdopoF7Y45u2f3YYT0L-9/view?usp=drive_link"
-    },
-    {
-      name: "Miracle Ademu Eteh",
-      role: "Fashion entrepreneur",
-      quote: "I need capital to open a physical fashion store",
-      bgColor: "bg-[#98E9D0]",
-      image: "/images/testimonials/miracle.jpg",
-      video: "https://drive.google.com/file/d/1jAijbDTvlWT8ZjqA3_vFcDQ7VfiOBhLe/view?usp=drive_link"
-    },
-    {
-      name: "Wasinta Buba",
-      role: "Fashion Designer", 
-      quote: "I need funding to expand my fashion business and open more branches",
-      bgColor: "bg-[#F8A3BE]",
-      image: "/images/testimonials/wasinta.jpg",
-      video: "https://drive.google.com/file/d/1QVuQ_8hkF5MZ6ggBlVamibHVmz4Vm7iy/view?usp=drive_link"
-    },
-    {
-      name: "Ife",
-      role: "Hairstylist",
-      quote: "I need capital to open a salon",
-      bgColor: "bg-[#B4E9FF]",
-      image: "/images/testimonials/ife.jpg",
-      video: "https://drive.google.com/file/d/1eBpXeZCz7eB3tRgy9k-IAi9jokR9whre/view?usp=drive_link"
-    },
-    {
-      name: "Chef OB",
-      role: "Chef",
-      quote: "I need funding to start my culinary school",
-      bgColor: "bg-[#98E9D0]",
-      image: "/images/testimonials/chefob.jpg",
-      video: "https://drive.google.com/file/d/1SmUzDekhZN_-feKPOGVcCU_gGzU7j5GQ/view?usp=drive_link"
-    }
-  ]
-
   return (
     <section className="min-h-[40vh] md:min-h-[80vh] relative py-12 md:py-20 bg-[#ED323D]">
+      {/* Hidden iframes to preload videos */}
+      <div className="hidden">
+        {Object.values(preloadedVideos).map((url, i) => (
+          <iframe key={i} src={url} />
+        ))}
+      </div>
+
       {selectedVideo && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
           <div className="relative w-full max-w-[400px] aspect-[9/16]">
@@ -81,7 +106,7 @@ export function Stories2() {
               <X size={32} />
             </button>
             <iframe
-              src={getGoogleDriveEmbedUrl(selectedVideo)}
+              src={preloadedVideos[selectedVideo] || getGoogleDriveEmbedUrl(selectedVideo)}
               className="w-full h-full rounded-lg"
               allow="autoplay"
               allowFullScreen

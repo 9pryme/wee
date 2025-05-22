@@ -223,7 +223,7 @@ export function Hero3() {
               className="w-full h-full object-cover"
               playsInline
               controls={false}
-              src="/videos/hero/vid.mp4"
+              src="https://res.cloudinary.com/dagqvkkto/video/upload/v1747910985/Official_PSA_jlbzcp.mp4"
               onPlay={() => handleVideoEvent('play')}
               onPause={() => handleVideoEvent('pause')}
               onEnded={() => handleVideoEvent('ended')}
@@ -288,7 +288,7 @@ export function Hero3() {
             muted={isMuted}
             playsInline
             controls={false}
-            src="/videos/hero/vid.mp4"
+            src="https://res.cloudinary.com/dagqvkkto/video/upload/v1747910985/Official_PSA_jlbzcp.mp4"
             onPlay={() => handleVideoEvent('play')}
             onPause={() => handleVideoEvent('pause')}
             onEnded={() => handleVideoEvent('ended')}
